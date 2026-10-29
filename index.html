@@ -1,0 +1,2369 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>부력 탐구실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<style>
+:root{
+  --bg:#E8F6FB; --bg2:#D5EEF7; --card:#FFFFFF; --ink:#12324A; --ink2:#4B6578; --line:#C9E2EC;
+  --pri:#0A86C2; --pri2:#066A9C; --priSoft:#DFF2FB;
+  --buoy:#E8473B; --grav:#2563EB; --ok:#14A06B; --okSoft:#E3F7EE; --warn:#E59400; --warnSoft:#FFF4DC; --bad:#D93D3D; --badSoft:#FDECEC;
+  --water:#3FA9E0; --sun:#FFC83D;
+  --r:20px; --shadow:0 6px 20px rgba(18,50,74,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Noto Sans KR",system-ui,sans-serif;font-size:19px;line-height:1.6;color:var(--ink);
+  background:linear-gradient(180deg,#F3FBFE 0,var(--bg) 320px,var(--bg) 100%);min-height:100vh;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+h1,h2,h3,.jua{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400;letter-spacing:.2px}
+.hidden{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+
+/* buttons */
+.btn{border:0;border-radius:14px;padding:12px 20px;font-weight:700;background:var(--pri);color:#fff;font-size:19px;
+  box-shadow:0 3px 0 var(--pri2);transition:transform .08s, box-shadow .08s, background .15s;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--pri2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--pri2);box-shadow:inset 0 0 0 2px var(--line)}
+.btn.ghost:active{box-shadow:inset 0 0 0 2px var(--pri)}
+.btn.small{padding:7px 13px;font-size:16px;border-radius:11px}
+.btn.red{background:var(--bad);box-shadow:0 3px 0 #A82929}
+.btn.green{background:var(--ok);box-shadow:0 3px 0 #0C7A50}
+.btn.amber{background:var(--warn);box-shadow:0 3px 0 #B47300}
+
+/* header */
+header.top{position:sticky;top:0;z-index:30;background:rgba(243,251,254,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:66px;flex-wrap:wrap;padding-top:6px;padding-bottom:6px}
+.logo{display:flex;align-items:center;gap:10px;margin-right:auto}
+.logo .mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(160deg,#5CC6F2,#0A86C2);display:grid;place-items:center;color:#fff;font-size:24px;box-shadow:0 3px 0 var(--pri2)}
+.logo b{font-family:"Jua";font-weight:400;font-size:27px;line-height:1}
+.logo small{display:block;color:var(--ink2);font-size:14px;line-height:1.2}
+.chip{background:#fff;border:2px solid var(--line);border-radius:999px;padding:5px 14px;font-weight:700;font-size:17px}
+.chip .pend{color:var(--warn);font-size:14px;margin-left:6px}
+
+/* tabs */
+nav.tabs{display:flex;gap:10px;margin:18px 0 14px;flex-wrap:wrap}
+nav.tabs button{flex:1 1 170px;border:0;background:#fff;border-radius:16px;padding:13px 10px;font-family:"Jua";font-size:21px;color:var(--ink2);
+  box-shadow:inset 0 0 0 2px var(--line);display:flex;align-items:center;justify-content:center;gap:8px}
+nav.tabs button.on{background:var(--pri);color:#fff;box-shadow:0 4px 0 var(--pri2)}
+nav.tabs button.locked{opacity:.6}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;border:1px solid #E3F1F7}
+.lockbox{text-align:center;padding:60px 20px}
+.lockbox .big{font-size:64px}
+.lockbox h2{font-size:30px;margin:6px 0}
+.lockbox p{color:var(--ink2);margin:0}
+
+/* entry */
+#entry{padding:28px 0 40px}
+.entry-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:22px;align-items:stretch}
+.hero{border-radius:26px;background:linear-gradient(170deg,#9EDCF5 0,#5BBEE8 45%,#2F95CF 100%);color:#fff;padding:30px;position:relative;overflow:hidden;min-height:420px}
+.hero h1{font-size:48px;margin:0 0 6px;line-height:1.15;text-shadow:0 3px 0 rgba(0,60,100,.25)}
+.hero p{margin:0;font-size:20px;opacity:.95}
+.hero .goals{margin-top:18px;background:rgba(255,255,255,.18);border-radius:16px;padding:12px 16px;font-size:18px}
+.hero canvas{position:absolute;left:0;right:0;bottom:0;width:100%;height:190px}
+.field{margin:14px 0}
+.field label{display:block;font-weight:700;margin-bottom:6px;font-size:19px}
+.field input{width:100%;font-size:26px;padding:12px 16px;border-radius:14px;border:2px solid var(--line);background:#fff;outline:none}
+.field input:focus{border-color:var(--pri)}
+.row{display:flex;gap:10px;align-items:center}
+.notice{border-radius:14px;padding:12px 14px;font-size:17px;line-height:1.5}
+.notice.warn{background:var(--warnSoft);color:#7A4D00;border:1px solid #F3D48E}
+.notice.info{background:var(--priSoft);color:#0B4E70;border:1px solid #BFE3F3}
+.notice.bad{background:var(--badSoft);color:#8E1F1F;border:1px solid #F3BDBD}
+.notice.ok{background:var(--okSoft);color:#0B5E3E;border:1px solid #AEE3CA}
+.err{color:var(--bad);font-weight:700;min-height:1.6em;font-size:17px;margin-top:6px}
+
+/* lab */
+.mission{border-radius:22px;background:#fff;border:3px solid #9FD8F0;box-shadow:var(--shadow);padding:16px 20px;margin-bottom:14px}
+.mission .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mission .tag{background:var(--pri);color:#fff;border-radius:12px;padding:4px 12px;font-family:"Jua";font-size:21px}
+.mission h3{margin:0;font-size:28px}
+.mission .dots{margin-left:auto;display:flex;gap:6px}
+.mission .dots button{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:#fff;font-weight:900;font-size:17px;color:var(--ink2)}
+.mission .dots button.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.mission .dots button.cur{border-color:var(--pri);color:var(--pri);box-shadow:0 0 0 3px #BFE3F3}
+.mission .dots button:disabled{opacity:.4}
+.mission .txt{font-size:21px;margin:10px 0 4px;font-weight:500}
+.choices{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.choices button{flex:1 1 160px;border:2px solid var(--line);background:#F7FCFE;border-radius:16px;padding:12px 14px;font-size:21px;font-weight:700}
+.choices button.right{background:var(--okSoft);border-color:var(--ok);color:#0B5E3E}
+.choices button.wrong{background:var(--badSoft);border-color:var(--bad);color:#8E1F1F}
+.choices button:disabled{cursor:default}
+.fb{margin-top:10px;font-size:19px}
+.mission.complete{border-color:#8BD8B2;background:linear-gradient(180deg,#F2FCF7,#fff)}
+.bookq{background:#FFFBEA;border:2px dashed #F1C84B;border-radius:16px;padding:12px 16px;margin-top:10px}
+.bookq ol{margin:6px 0 4px;padding-left:28px;font-size:20px;font-weight:700}
+.bookq li{margin:4px 0}
+.lab-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:16px}
+.stage{position:relative;background:linear-gradient(180deg,#F6FBFD,#E9F4F9);border-radius:22px;border:1px solid var(--line);overflow:hidden}
+.stage{display:flex;justify-content:center;align-items:center}
+.stage canvas{display:block;width:100%;height:auto;touch-action:none}
+#labCv{width:auto;max-width:100%;max-height:68vh;aspect-ratio:640/560}
+#measCv{width:auto;max-width:100%;max-height:74vh;aspect-ratio:640/700}
+.panel h4{font-family:"Jua";font-weight:400;font-size:22px;margin:4px 0 8px}
+.ctrl{display:flex;flex-direction:column;gap:12px}
+.pour{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pour .btn{padding:18px 10px;font-size:22px;font-family:"Jua";font-weight:400}
+.hint-s{font-size:15px;color:var(--ink2);margin-top:4px}
+.toggle{display:flex;align-items:center;gap:12px;background:#F7FCFE;border:2px solid var(--line);border-radius:16px;padding:12px 14px;font-weight:700;font-size:20px;cursor:pointer;user-select:none}
+.toggle .sw{width:56px;height:32px;border-radius:999px;background:#C9D7DF;position:relative;flex:none;transition:.2s}
+.toggle .sw::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on .sw{background:var(--ok)}
+.toggle.on .sw::after{left:28px}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;border:2px solid var(--line);background:#fff;border-radius:14px;padding:10px 8px;font-weight:700;font-size:18px}
+.seg button.on{border-color:var(--pri);background:var(--priSoft);color:var(--pri2)}
+.bars{display:flex;gap:26px;align-items:flex-end;justify-content:center;height:170px;padding:8px 0 0;border-bottom:3px solid #9DB8C6}
+.bars .b{width:58px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bars .b i{display:block;width:100%;border-radius:10px 10px 0 0;transition:height .05s}
+.bars .b.init i{background:repeating-linear-gradient(45deg,#7CCB9F 0 8px,#6ABF91 8px 16px)}
+.bars .b.now i{background:repeating-linear-gradient(45deg,#FFB547 0 8px,#F8A62E 8px 16px)}
+.bars-l{display:flex;gap:26px;justify-content:center;font-weight:700;font-size:17px}
+.bars-l span{width:58px;text-align:center}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:17px;font-weight:700}
+.legend i{display:inline-block;width:26px;height:6px;border-radius:3px;vertical-align:middle;margin-right:6px}
+
+/* direction */
+.dir-top{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dir-top button{width:52px;height:52px;border-radius:16px;border:2px solid var(--line);background:#fff;font-weight:900;font-size:20px;color:var(--ink2)}
+.dir-top button.on{border-color:var(--pri);color:var(--pri);box-shadow:0 0 0 3px #BFE3F3}
+.dir-top button.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.dir-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:16px}
+.dir-q{font-family:"Jua";font-size:27px;margin:0 0 4px}
+.dir-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
+/* wall */
+.wall-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.wall-head h2{margin:0;font-size:30px;margin-right:auto}
+.wall-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.col-h{font-family:"Jua";font-size:24px;border-radius:16px;padding:10px 16px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.col-h.liquid{background:#D7EEFB;color:#0A5E8C}
+.col-h.gas{background:#FFF0D6;color:#8A5A00}
+.col-h .n{margin-left:auto;font-family:"Noto Sans KR";font-weight:700;font-size:16px;opacity:.8}
+.post{background:#fff;border-radius:18px;padding:14px 16px;margin-bottom:12px;border:1px solid #E1EEF4;box-shadow:0 3px 10px rgba(18,50,74,.06);position:relative;word-break:keep-all;overflow-wrap:anywhere}
+.post.liquid{border-left:7px solid #4BB3E6}
+.post.gas{border-left:7px solid #F5B23D}
+.post.mine{background:#FFFDF2}
+.post h5{margin:0 0 4px;font-size:21px;font-weight:900}
+.post p{margin:0;font-size:18px;white-space:pre-wrap}
+.post .who{margin-top:8px;font-size:15px;color:var(--ink2);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.post .who .sid{background:#FFE7E7;color:#8E1F1F;border-radius:8px;padding:0 6px;font-weight:700}
+.post .del{margin-left:auto}
+.empty{color:var(--ink2);text-align:center;padding:24px 10px;border:2px dashed var(--line);border-radius:16px}
+.big-wall .post h5{font-size:28px}
+.big-wall .post p{font-size:24px}
+.big-wall .post .who{font-size:19px}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(10,30,45,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal .box{background:#fff;border-radius:24px;max-width:560px;width:100%;padding:22px;max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal h3{margin:0 0 10px;font-size:28px}
+.modal textarea,.modal input[type=text],.modal input[type=password]{width:100%;font-size:20px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);outline:none}
+.modal textarea{min-height:130px;resize:vertical}
+.modal textarea:focus,.modal input:focus{border-color:var(--pri)}
+.modal .acts{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.count{text-align:right;font-size:14px;color:var(--ink2)}
+.radio2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.radio2 label{border:2px solid var(--line);border-radius:16px;padding:12px;display:flex;gap:10px;align-items:center;font-weight:700;font-size:19px;cursor:pointer}
+.radio2 input{width:24px;height:24px;flex:none}
+.radio2 label.on{border-color:var(--pri);background:var(--priSoft)}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#12324A;color:#fff;padding:12px 20px;border-radius:14px;z-index:200;font-weight:700;font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:90vw;text-align:center}
+
+/* teacher */
+#teacher{position:fixed;inset:0;z-index:60;background:#F2F7FA;overflow:auto}
+#teacher header{background:#12324A;color:#fff;position:sticky;top:0;z-index:5}
+#teacher header .wrap{display:flex;align-items:center;gap:10px;min-height:62px;flex-wrap:wrap;padding-top:6px;padding-bottom:6px}
+#teacher header b{font-family:"Jua";font-weight:400;font-size:25px;margin-right:auto}
+.ttabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.ttabs button{border:0;background:#fff;border-radius:14px;padding:10px 16px;font-weight:700;font-size:18px;box-shadow:inset 0 0 0 2px var(--line);position:relative}
+.ttabs button.on{background:var(--pri);color:#fff;box-shadow:none}
+.badge{background:var(--bad);color:#fff;border-radius:999px;font-size:13px;padding:1px 7px;margin-left:6px}
+.switches{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.sw-card{background:#fff;border-radius:20px;padding:20px;border:2px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.sw-card h4{margin:0;font-family:"Jua";font-weight:400;font-size:25px}
+.sw-card .state{font-weight:900;font-size:20px}
+.sw-card.open{border-color:var(--ok);background:#F4FCF8}
+table.st{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;font-size:17px}
+table.st th,table.st td{padding:9px 10px;border-bottom:1px solid #E6EFF4;text-align:center;white-space:nowrap}
+table.st th{background:#E6F3F9;font-size:15px}
+table.st td.l{text-align:left}
+.dot{display:inline-block;width:20px;height:20px;border-radius:50%;background:#E2EAEF;margin:0 2px;vertical-align:middle}
+.dot.y{background:var(--ok)}
+.tscroll{overflow-x:auto;border-radius:16px;box-shadow:var(--shadow)}
+.preview-bar{background:#12324A;color:#fff;padding:8px 0;position:sticky;top:0;z-index:40}
+.preview-bar .wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+footer.copy{margin:40px auto 24px;padding:0 16px;max-width:1180px;text-align:center;color:#7A8E9B;font-size:12.5px;line-height:1.6}
+
+/* 부력의 크기 탭 */
+.subnav{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.subnav button{border:2px solid var(--line);background:#fff;border-radius:16px;padding:12px 10px;font-family:"Jua";font-size:22px;color:var(--ink2);line-height:1.25}
+.subnav button small{display:block;font-family:"Noto Sans KR";font-size:14px;font-weight:500;opacity:.8}
+.subnav button.on{border-color:var(--pri);background:var(--priSoft);color:var(--pri2);box-shadow:0 3px 0 #9FD8F0}
+.readout{background:#12324A;border-radius:18px;padding:14px;text-align:center;color:#fff}
+.readout .rl{font-size:16px;opacity:.85}
+.readout .rv{font-family:"Jua";font-size:54px;line-height:1.1;color:#B5F5C9;letter-spacing:1px}
+.readout .rs{font-size:18px;font-weight:700}
+.readout .rs.warn{color:#FFD166}
+table.rec{width:100%;border-collapse:collapse;font-size:18px}
+table.rec th,table.rec td{border:1px solid var(--line);padding:7px 6px;text-align:center}
+table.rec th{background:#E6F3F9;font-size:15px}
+table.rec td.l{text-align:left;font-size:16px}
+table.rec tr.got td{background:#F3FCF7}
+table.rec input{width:74px;font-size:20px;text-align:center;border:2px solid var(--line);border-radius:10px;padding:4px}
+table.rec input.bad{border-color:var(--bad);background:var(--badSoft)}
+.figseg{margin-bottom:12px}
+.figseg button{font-size:20px;padding:12px}
+.fig-stage canvas{width:100%}
+.fig-q{font-family:"Jua";font-size:27px;margin:4px 0 6px}
+.dir-top button.miss{background:var(--badSoft);border-color:var(--bad);color:var(--bad)}
+#qzCv{width:100%}
+/* 사진 */
+.ph{position:relative;margin:-2px -2px 10px;border-radius:14px;overflow:hidden;background:#EEF5F9;cursor:zoom-in;min-height:60px}
+.ph canvas{display:block;width:100%;height:auto}
+.ph.loading{aspect-ratio:4/3}
+.ph.loading::after{content:"사진 불러오는 중…";position:absolute;inset:0;display:grid;place-items:center;color:var(--ink2);font-size:16px}
+.ph.fail{display:grid;place-items:center;color:var(--ink2);font-size:15px;padding:20px;cursor:default}
+.pick-cv{display:block;width:100%;height:auto;margin-top:10px;border-radius:14px;border:2px dashed #F5A623;touch-action:none;cursor:crosshair}
+/* 공기 중 부력 */
+.air{margin-top:0;border:3px solid #FFD98A;background:linear-gradient(180deg,#FFFBEF,#fff 140px)}
+.air-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.air-head h3{margin:0;font-size:29px}
+.tag2{background:#F5A623;color:#fff;border-radius:12px;padding:4px 12px;font-family:"Jua";font-size:20px}
+.air-lead{font-size:20px;margin:8px 0 14px}
+.air-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:16px;align-items:start}
+.air-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.air-pick button{border:2px solid var(--line);background:#fff;border-radius:14px;padding:11px 8px;font-weight:700;font-size:20px}
+.air-pick button.on{border-color:var(--warn);background:#FFF4DC;color:#7A4D00}
+.air-pick button.seen:not(.on)::after{content:" ✓";color:var(--ok)}
+.air-info .notice{font-size:19px;margin-bottom:8px}
+.air-q{margin-top:18px;border-top:2px dashed #F1D58E;padding-top:14px}
+.air-q .qt{font-weight:900;font-size:21px}
+.air-sum{margin-top:12px}
+.air-sum ul{margin:6px 0 0;padding-left:26px;font-size:20px;line-height:1.7}
+@media (max-width:900px){
+  .entry-grid,.lab-grid,.dir-grid,.air-grid{grid-template-columns:1fr}
+  .subnav{grid-template-columns:1fr}
+  .hero{min-height:330px}
+  .hero h1{font-size:40px}
+}
+@media (max-width:640px){
+  body{font-size:18px}
+  .wall-cols{grid-template-columns:1fr}
+  .mission h3{font-size:24px}
+  .mission .txt{font-size:19px}
+  nav.tabs button{font-size:18px;flex-basis:100px;padding:12px 6px}
+  .logo small{display:none}
+  .radio2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- 교사 미리보기 막대 -->
+<div class="preview-bar hidden" id="previewBar"><div class="wrap">
+  <b class="jua" style="font-size:20px">📺 수업 화면 보기</b><span style="opacity:.8;font-size:15px">모든 활동이 열린 상태로 보여요 · 기록은 저장되지 않아요</span>
+  <button class="btn small" style="margin-left:auto" id="previewBack">👩‍🏫 교사 모드로 돌아가기</button>
+</div></div>
+
+<div class="preview-bar hidden" id="pubBar" style="background:#8A5A00"><div class="wrap">
+  <b class="jua" style="font-size:20px">👀 로그인 없이 보는 중</b><span style="opacity:.9;font-size:15px">모든 반 사례를 볼 수 있어요 · 글은 입장해야 올릴 수 있어요</span>
+  <button class="btn small ghost" style="margin-left:auto" id="pubBack">← 입장 화면으로</button>
+</div></div>
+
+<header class="top">
+  <div class="wrap">
+    <div class="logo"><div class="mark">🫧</div><div><b>부력 탐구실</b><small>Ⅴ 힘의 작용 · 물체를 떠오르게 하는 힘 (교과서 166~169쪽)</small></div></div>
+    <span class="chip hidden" id="meChip"></span>
+    <button class="btn ghost small hidden" id="nickReqBtn">✏️ 닉네임 변경 요청</button>
+    <button class="btn ghost small" id="teacherBtnTop">👩‍🏫 교사 모드</button>
+  </div>
+</header>
+
+<!-- ================= 입장 ================= -->
+<main id="entry" class="wrap hidden">
+  <div class="entry-grid">
+    <div class="hero">
+      <h1>물체를<br>떠오르게 하는 힘</h1>
+      <p>물속에서 물체는 어떤 힘을 받을까요?<br>가상 비커에 물을 부어 직접 확인해 봐요!</p>
+      <div class="goals">🎯 물속에서 물체가 받는 힘을 관찰할 수 있다.<br>🎯 물속에서 물체가 받는 힘의 방향과 크기를 설명할 수 있다.</div>
+      <canvas id="heroCv" width="900" height="260" aria-hidden="true"></canvas>
+    </div>
+    <div class="card">
+      <h2 style="margin:0 0 4px;font-size:32px">입장하기</h2>
+      <div class="notice warn">⚠️ <b>닉네임에 실명을 쓰지 마세요.</b><br>한 번 입장하면 로그아웃하거나 바꿀 수 없어요. 닉네임을 바꾸려면 선생님 승인이 필요해요.</div>
+      <div class="field">
+        <label for="inSid">학번 (5자리)</label>
+        <input id="inSid" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="예) 10612">
+      </div>
+      <div class="field">
+        <label for="inNick">닉네임 (2~10자)</label>
+        <div class="row">
+          <input id="inNick" maxlength="10" autocomplete="off" placeholder="예) 노래하는 기린">
+          <button class="btn amber" id="diceBtn" title="랜덤 닉네임" style="font-size:26px;padding:10px 16px">🎲</button>
+        </div>
+        <div class="hint-s">🎲를 누르면 멋진 닉네임을 골라 줘요. 같은 반에 같은 닉네임은 쓸 수 없어요.</div>
+      </div>
+      <button class="btn" id="joinBtn" style="width:100%;font-size:24px;padding:16px;font-family:'Jua';font-weight:400">입장하기 ▶</button>
+      <div class="err" id="joinErr"></div>
+      <div class="hidden" id="pubEntry" style="margin-top:10px">
+        <button class="btn amber" id="pubBtn" style="width:100%;font-size:21px;padding:13px">👀 로그인 없이 담벼락 보기</button>
+        <div class="hint-s" style="text-align:center">지금은 선생님이 열어 두어서 입장하지 않고도 모든 반 사례를 볼 수 있어요. (글은 못 올려요)</div>
+      </div>
+      <div style="text-align:center;margin-top:8px"><button class="btn ghost small" id="teacherBtnEntry">👩‍🏫 교사 모드</button></div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= 앱 ================= -->
+<main id="app" class="wrap hidden">
+  <nav class="tabs" id="tabs">
+    <button data-t="lab">🧪 실험실</button>
+    <button data-t="dir">🧭 부력 방향 찾기</button>
+    <button data-t="air">🎈 공기 중의 부력</button>
+    <button data-t="wall">📸 부력 사례 담벼락</button>
+    <button data-t="meas">⚖️ 부력의 크기</button>
+  </nav>
+
+  <!-- 실험실 -->
+  <section id="p-lab" class="pane">
+    <div class="card lockbox hidden" data-lock><div class="big">🔒</div><h2>아직 열리지 않았어요</h2><p>선생님이 실험실을 열면 바로 시작할 수 있어요.</p></div>
+    <div data-body>
+      <div class="mission" id="missionBox"></div>
+      <div class="lab-grid">
+        <div class="stage"><canvas id="labCv" width="640" height="560" aria-label="비커 속 용수철과 스타이로폼 구 가상 실험"></canvas></div>
+        <div class="card panel ctrl">
+          <div>
+            <h4>💧 물 붓기</h4>
+            <div class="pour">
+              <button class="btn" id="pourBtn">💧 물 붓기</button>
+              <button class="btn ghost" id="drainBtn">🚰 물 빼기</button>
+            </div>
+            <div class="hint-s">버튼을 <b>꾹 누르고 있는 동안</b> 물이 들어가고 빠져요.</div>
+          </div>
+          <div class="toggle" id="arrowToggle" role="switch" aria-checked="false" tabindex="0"><span class="sw"></span><span>➡️ 화살표 보기</span></div>
+          <div class="legend hidden" id="arrowLegend"><span><i style="background:var(--buoy)"></i><span id="lgB">물이 구를 밀어 올리는 힘</span></span><span><i style="background:var(--grav)"></i>중력(무게)</span></div>
+          <div>
+            <h4>📏 용수철 길이 비교</h4>
+            <div class="bars"><div class="b init"><i id="barInit"></i></div><div class="b now"><i id="barNow"></i></div></div>
+            <div class="bars-l"><span>처음</span><span>지금</span></div>
+          </div>
+          <div>
+            <h4>🔬 더 알아보기 · 공 바꾸기</h4>
+            <div class="seg" id="ballSeg"><button data-b="styro" class="on">스타이로폼 구</button><button data-b="pp">탁구공</button></div>
+            <div class="hint-s" id="ballHint">미션을 모두 마치면 탁구공으로도 실험할 수 있어요.</div>
+          </div>
+          <button class="btn ghost small" id="resetLab">↺ 처음 상태로 (물 모두 빼기)</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 방향 찾기 -->
+  <section id="p-dir" class="pane hidden">
+    <div class="card lockbox hidden" data-lock><div class="big">🔒</div><h2>아직 열리지 않았어요</h2><p>선생님이 ‘부력 방향 찾기’를 열면 시작할 수 있어요.</p></div>
+    <div data-body>
+      <div class="dir-top" id="dirNav"></div>
+      <div class="dir-grid">
+        <div class="stage"><canvas id="dirCv" width="640" height="440" aria-label="부력 방향 그리기 판"></canvas></div>
+        <div class="card">
+          <div class="hint-s" id="dirNum"></div>
+          <h3 class="dir-q" id="dirTitle"></h3>
+          <div style="font-size:20px" id="dirPrompt"></div>
+          <div class="notice info" style="margin-top:10px">✍️ 물체에서부터 손가락(마우스)으로 쭉 끌어 <b>부력 화살표</b>를 그려요. 다시 그리면 새로 그려져요.</div>
+          <div id="dirFb" class="fb"></div>
+          <div class="dir-actions" id="dirActs"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 공기 중의 부력 -->
+  <section id="p-air" class="pane hidden">
+    <div class="card lockbox hidden" data-lock><div class="big">🔒</div><h2>아직 열리지 않았어요</h2><p>선생님이 ‘공기 중의 부력’을 열면 시작할 수 있어요.</p></div>
+    <div data-body>
+      <div class="card air" id="airCard">
+        <div class="air-head"><span class="tag2">🎈 공기 중의 부력</span><h3>공기 중에서도 부력을 받을까?</h3></div>
+        <p class="air-lead">물체는 물속뿐 아니라 <b>공기(기체) 중에서도 부력</b>을 받아요. 그런데 사과나 공을 들고 있을 때는 왜 공기의 부력을 그리지 않을까요? 물체를 하나씩 골라 <b style="color:#1D4ED8">중력</b>과 <b style="color:#C2281E">공기의 부력</b>을 비교해 보세요.</p>
+        <div class="air-grid">
+          <div class="stage"><canvas id="airCv" width="640" height="420" aria-label="공기 중에서 물체가 받는 중력과 부력 비교"></canvas></div>
+          <div>
+            <div class="air-pick" id="airPick"></div>
+            <div class="air-info" id="airInfo"></div>
+            <button class="btn green" id="airDrop" style="width:100%">▶ 손 놓아 보기</button>
+          </div>
+        </div>
+        <div class="air-q" id="airQ"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 담벼락 -->
+  <section id="p-wall" class="pane hidden">
+    <div class="card lockbox hidden" data-lock><div class="big">🔒</div><h2>아직 열리지 않았어요</h2><p>선생님이 담벼락을 열면 사례를 올릴 수 있어요.</p></div>
+    <div data-body>
+      <div class="wall-head">
+        <h2>📸 생활 속 부력 사례 담벼락</h2>
+        <span class="chip" id="myCount">내 사례 0/4</span>
+        <button class="btn green" id="postBtn">＋ 부력 사례 올리기</button>
+      </div>
+      <div class="notice info" style="margin-bottom:12px">🔎 생활 속에서 <b>부력을 이용하는 예</b>를 찾아 <b>사진</b>으로 올리고, 사진 위에 <b>부력의 방향을 화살표</b>로 그려요. 액체(물)에서 작용하는 부력인지, 기체(공기)에서 작용하는 부력인지도 골라요. 교과서에 없는 사례를 찾으면 더 멋져요!<br>🙅 글에 친구 이름 같은 개인정보는 쓰지 마세요.</div>
+      <div id="wallBody"></div>
+    </div>
+  </section>
+
+  <!-- 부력의 크기 -->
+  <section id="p-meas" class="pane hidden">
+    <div class="card lockbox hidden" data-lock><div class="big">🔒</div><h2>아직 열리지 않았어요</h2><p>선생님이 ‘부력의 크기’를 열면 시작할 수 있어요.</p></div>
+    <div data-body>
+      <div class="subnav" id="measNav">
+        <button data-s="exp" class="on">① 물속에서 부력 측정하기<small>교과서 168쪽</small></button>
+        <button data-s="fig">② 그림으로 생각하기<small>교과서 169쪽</small></button>
+        <button data-s="quiz">③ 어느 쪽 부력이 클까?<small>퀴즈 10문제</small></button>
+      </div>
+      <div id="ms-exp">
+        <div class="mission" id="measMission"></div>
+        <div class="lab-grid">
+          <div class="stage"><canvas id="measCv" width="640" height="700" aria-label="디지털 용수철저울에 단 추를 물속에 담그는 가상 실험"></canvas></div>
+          <div class="card panel ctrl">
+            <div class="readout"><div class="rl">📟 디지털 용수철저울</div><div class="rv" id="measRead">3.00 N</div><div class="rs" id="measState">추가 모두 공기 중에 있어요</div></div>
+            <div class="pour"><button class="btn" id="measUp">▲ 올리기</button><button class="btn" id="measDown">▼ 내리기</button></div>
+            <div class="hint-s">버튼을 <b>꾹 누르거나</b>, 그림의 추를 위아래로 끌어 보세요.</div>
+            <button class="btn amber" id="measRec" style="font-size:21px;padding:14px">📋 지금 값 기록하기</button>
+            <table class="rec" id="measTable"></table>
+            <div class="toggle" id="measArrow" role="switch" aria-checked="false" tabindex="0"><span class="sw"></span><span>➡️ 부력 화살표 보기</span></div>
+          </div>
+        </div>
+      </div>
+      <div id="ms-fig" class="hidden">
+        <div class="seg figseg" id="figSeg"><button data-f="bowl" class="on">🥣 그릇에 작용하는 부력</button><button data-f="ship">🚢 배에 작용하는 부력</button></div>
+        <div class="stage fig-stage"><canvas id="figCv" width="1200" height="640" aria-label="교과서 169쪽 그림 배와 그릇에 작용하는 부력"></canvas></div>
+        <div class="card" id="figQ" style="margin-top:14px"></div>
+      </div>
+      <div id="ms-quiz" class="hidden">
+        <div class="dir-top" id="qzNav"></div>
+        <div class="stage"><canvas id="qzCv" width="1000" height="420" aria-label="부력 비교 퀴즈 그림"></canvas></div>
+        <div class="card" id="qzBox" style="margin-top:14px"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= 교사 모드 ================= -->
+<div id="teacher" class="hidden">
+  <header><div class="wrap">
+    <b>👩‍🏫 부력 탐구실 · 교사 모드</b>
+    <button class="btn small" id="tPreview">📺 수업 화면 보기</button>
+    <button class="btn small ghost" id="tExit">닫기 ✕</button>
+  </div></header>
+  <div class="wrap">
+    <div class="ttabs" id="ttabs">
+      <button data-v="open" class="on">🔓 활동 열기·닫기</button>
+      <button data-v="students">👥 학생 현황</button>
+      <button data-v="req">✏️ 닉네임 요청<span class="badge hidden" id="reqBadge"></span></button>
+      <button data-v="posts">📝 담벼락 관리</button>
+    </div>
+    <div id="tv-open"></div>
+    <div id="tv-students" class="hidden"></div>
+    <div id="tv-req" class="hidden"></div>
+    <div id="tv-posts" class="hidden"></div>
+  </div>
+</div>
+
+<footer class="copy" id="copy"></footer>
+
+<script>
+(function(){
+"use strict";
+/* ================== 기본 ================== */
+const CFG = Object.assign({SUPABASE_URL:"",SUPABASE_ANON_KEY:"",APPS_SCRIPT_URL:"",GRADE:1,CLASS_COUNT:7,YEAR:2026}, window.BUOY_CONFIG||{});
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+function el(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs){
+    const v = attrs[k];
+    if (v==null || v===false) continue;
+    if (k==="class") e.className = v;
+    else if (k==="text") e.textContent = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k==="style") e.setAttribute("style", v);
+    else e.setAttribute(k, v===true ? "" : v);
+  }
+  for (const k of kids.flat()){ if (k==null||k===false) continue; e.append(k.nodeType ? k : document.createTextNode(String(k))); }
+  return e;
+}
+function toast(msg, ms){
+  $$(".toast").forEach(x=>x.remove());
+  const t = el("div",{class:"toast",text:msg}); document.body.append(t);
+  setTimeout(()=>t.remove(), ms||2200);
+}
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+$("#copy").innerHTML = "";
+$("#copy").append(
+  el("div",{text:"이 가상실험(프로그램 코드, 디자인, 캐릭터·그림, 애니메이션, 문항과 설명 글)의 저작권은 제작자 혜민쌤에게 있으며, 허락 없이 복제·수정·배포·게시하거나 상업적으로 이용하는 것을 금지합니다."}),
+  el("div",{text:"© "+CFG.YEAR+" 혜민쌤의 가상실험실"})
+);
+
+/* ================== 서버 ================== */
+const CONFIGURED = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY);
+async function rpc(fn, args){
+  if (!CONFIGURED) throw new Error("noconfig");
+  const key = CFG.SUPABASE_ANON_KEY;
+  const h = {"Content-Type":"application/json","apikey":key};
+  if (!/^sb_/.test(key)) h["Authorization"] = "Bearer "+key;
+  const r = await fetch(CFG.SUPABASE_URL.replace(/\/+$/,"")+"/rest/v1/rpc/"+fn, {method:"POST",headers:h,body:JSON.stringify(args||{})});
+  if (!r.ok) throw new Error("http"+r.status);
+  return r.json();
+}
+const NETERR = "서버에 연결하지 못했어요. 인터넷을 확인하고 다시 해 보세요.";
+
+/* ================== 상태 ================== */
+let ME = null;               // {sid, token, nickname}
+let MODE = "student";        // student | preview
+const TABS = ["lab","dir","air","wall","meas"];
+const TAB_NAMES = {lab:"🧪 실험실",dir:"🧭 부력 방향 찾기",air:"🎈 공기 중의 부력",wall:"📸 부력 사례 담벼락",meas:"⚖️ 부력의 크기"};
+let OPEN = {lab:false,dir:false,air:false,wall:false,meas:false,pub:false};
+// extra: bit0 공기 확인 문제, bit1~3 부력 측정 미션, bit4 그릇 그림 문제, bit5 배 그림 문제
+// qdone/qok: 퀴즈 문항별 푼 것 / 정답 맞힌 것
+const EMPTY_PROG = ()=>({missions:0, dir:0, extra:0, qdone:0, qok:0});
+let PROG = EMPTY_PROG();
+function loadProg(c){ c = c||{}; return {missions:c.missions|0, dir:c.dir|0, extra:c.extra|0, qdone:c.qdone|0, qok:c.qok|0}; }
+let PENDING = null;
+let TAB = "lab";
+let TPW = null;              // 교사 비밀번호 (메모리에만)
+
+/* ================== 랜덤 닉네임 ================== */
+const ADJ = ["노래하는","용감한","반짝이는","씩씩한","똑똑한","친절한","신나는","춤추는","웃는","빛나는","날쌘","다정한","멋진","행복한","지혜로운","상냥한","힘찬","꿈꾸는","탐구하는","침착한","든든한","명랑한","부지런한","재치있는","우아한","차분한","용기있는","별을 보는"];
+const ANI = ["기린","펭귄","수달","고래","돌고래","여우","사슴","판다","코알라","다람쥐","토끼","부엉이","독수리","해달","알파카","고양이","강아지","사자","호랑이","치타","늑대","앵무새","해마","북극곰","너구리","두루미","백조","표범"];
+function randomNick(){
+  for (let i=0;i<20;i++){
+    const n = ADJ[Math.floor(Math.random()*ADJ.length)]+" "+ANI[Math.floor(Math.random()*ANI.length)];
+    if (n.length<=10) return n;
+  }
+  return "멋진 고래";
+}
+
+/* ================== 입장 ================== */
+const ERRMSG = {
+  bad_sid:"학번 5자리를 확인해 주세요. (예: 10612 → 1학년 6반 12번)",
+  bad_nick:"닉네임은 2~10자, 한글·영어·숫자로만 지어 주세요.",
+  bad_word:"닉네임에 쓸 수 없는 말이 들어 있어요. 다른 닉네임을 지어 주세요.",
+  dup_nick:"같은 반에 이미 같은 닉네임이 있어요. 🎲를 눌러 다른 닉네임을 골라 보세요.",
+  other_nick:"이 학번은 다른 닉네임으로 이미 입장했어요. 처음에 쓴 닉네임을 넣거나 선생님께 말씀드리세요."
+};
+function sidOk(s){
+  if (!/^[1-3]\d{4}$/.test(s)) return false;
+  const c = +s.slice(1,3), n = +s.slice(3,5);
+  return c>=1 && c<=CFG.CLASS_COUNT && n>=1 && n<=50;
+}
+$("#diceBtn").addEventListener("click", ()=>{ $("#inNick").value = randomNick(); $("#joinErr").textContent=""; });
+$("#inSid").addEventListener("input", e=>{ e.target.value = e.target.value.replace(/\D/g,"").slice(0,5); });
+$("#joinBtn").addEventListener("click", doJoin);
+$("#inNick").addEventListener("keydown", e=>{ if(e.key==="Enter") doJoin(); });
+async function doJoin(){
+  const sid = $("#inSid").value.trim(), nick = $("#inNick").value.trim().replace(/\s+/g," ");
+  const err = $("#joinErr"); err.textContent = "";
+  if (!sidOk(sid)) { err.textContent = ERRMSG.bad_sid; return; }
+  if (nick.length<2 || nick.length>10 || !/^[가-힣A-Za-z0-9 ]+$/.test(nick)) { err.textContent = ERRMSG.bad_nick; return; }
+  $("#joinBtn").disabled = true;
+  try{
+    const r = await rpc("buoy_join",{p_sid:sid,p_nick:nick});
+    if (!r.ok){ err.textContent = ERRMSG[r.err] || "입장하지 못했어요."; return; }
+    ME = {sid, token:r.token, nickname:r.nickname};
+    store.set("buoy_me", ME);
+    await startStudent();
+  }catch(e){ err.textContent = e.message==="noconfig" ? "설정 파일(config.js)에 Supabase 주소와 키가 없어요. 선생님께 알려 주세요." : NETERR; }
+  finally{ $("#joinBtn").disabled = false; }
+}
+
+function showEntry(){
+  $("#entry").classList.remove("hidden"); $("#app").classList.add("hidden");
+  $("#meChip").classList.add("hidden"); $("#nickReqBtn").classList.add("hidden");
+  if (!CONFIGURED) $("#joinErr").textContent = "설정 파일(config.js)에 Supabase 주소와 키가 없어요. 선생님께 알려 주세요.";
+  heroAnim(); startPubCheck();
+}
+
+/* ---------- 로그인 없이 담벼락 보기 ---------- */
+let pubTimer = null;
+async function checkPub(){
+  if (!CONFIGURED) return;
+  const onEntry = !$("#entry").classList.contains("hidden");
+  if (!onEntry && MODE!=="public"){ clearInterval(pubTimer); pubTimer=null; return; }
+  try{
+    const r = await rpc("buoy_public_status",{});
+    const on = !!(r.ok && r.pub);
+    $("#pubEntry").classList.toggle("hidden", !on);
+    if (!on && MODE==="public"){ leavePublic(); toast("선생님이 ‘로그인 없이 보기’를 닫았어요."); }
+  }catch(e){}
+}
+function startPubCheck(){ checkPub(); clearInterval(pubTimer); pubTimer = setInterval(checkPub, 5000); }
+$("#pubBtn").addEventListener("click", async()=>{
+  try{ const r = await rpc("buoy_public_status",{});
+    if (!(r.ok && r.pub)){ $("#pubEntry").classList.add("hidden"); toast("지금은 로그인 없이 볼 수 없어요."); return; }
+  }catch(e){ toast(NETERR); return; }
+  MODE = "public"; wallCls = "all";
+  $("#entry").classList.add("hidden"); $("#app").classList.remove("hidden"); $("#pubBar").classList.remove("hidden");
+  $$("#tabs button").forEach(b=>b.classList.toggle("hidden", b.dataset.t!=="wall"));
+  renderMe(); setTab("wall"); startPubCheck();
+});
+function leavePublic(){
+  MODE = "student"; $("#pubBar").classList.add("hidden");
+  $$("#tabs button").forEach(b=>b.classList.remove("hidden"));
+  $("#wallBody").innerHTML = ""; TAB = "lab";
+  showEntry();
+}
+$("#pubBack").addEventListener("click", leavePublic);
+
+async function startStudent(){
+  MODE = "student";
+  const cached = store.get("buoy_prog_"+ME.sid);
+  if (cached) PROG = loadProg(cached);
+  $("#entry").classList.add("hidden"); $("#app").classList.remove("hidden");
+  renderMe();
+  await refreshMe();
+  pushProgress();
+  setTab(TAB);
+  if (!pollTimer) pollTimer = setInterval(refreshMe, 8000);
+}
+let pollTimer = null;
+async function refreshMe(){
+  if (MODE!=="student" || !ME) return;
+  try{
+    const r = await rpc("buoy_me",{p_sid:ME.sid,p_token:ME.token});
+    if (!r.ok){ // 교사가 기록을 지움
+      store.del("buoy_me"); store.del("buoy_prog_"+ME.sid); ME=null; PROG=EMPTY_PROG();
+      clearInterval(pollTimer); pollTimer=null;
+      showEntry(); toast("선생님이 기록을 정리했어요. 다시 입장해 주세요."); return;
+    }
+    const changed = TABS.concat(["pub"]).some(k=>!!r.open[k]!==!!OPEN[k]);
+    OPEN = r.open;
+    ME.nickname = r.nickname; store.set("buoy_me", ME);
+    PENDING = r.pending;
+    PROG.missions |= r.missions; PROG.dir |= r.dir; PROG.extra |= (r.extra|0); PROG.qdone |= (r.qdone|0); PROG.qok |= (r.qok|0);
+    if (QZ && QZ.sync) QZ.sync();
+    store.set("buoy_prog_"+ME.sid, PROG);
+    renderMe();
+    if (changed) applyLocks();
+    renderMission(); renderDirNav();
+  }catch(e){ /* 잠시 끊김: 다음 주기에 다시 */ }
+}
+function renderMe(){
+  const c = $("#meChip");
+  if (MODE!=="student" || !ME){ c.classList.add("hidden"); $("#nickReqBtn").classList.add("hidden"); return; }
+  c.classList.remove("hidden"); c.textContent = "";
+  c.append((+ME.sid.slice(1,3))+"반 · "+ME.nickname);
+  if (PENDING) c.append(el("span",{class:"pend",text:"(‘"+PENDING+"’ 승인 대기)"}));
+  $("#nickReqBtn").classList.remove("hidden");
+}
+let pushT = null;
+function saveProgress(){
+  if (MODE!=="student" || !ME) return;
+  store.set("buoy_prog_"+ME.sid, PROG);
+  clearTimeout(pushT); pushT = setTimeout(pushProgress, 400);
+}
+async function pushProgress(){
+  if (MODE!=="student" || !ME) return;
+  try{ await rpc("buoy_save",{p_sid:ME.sid,p_token:ME.token,p_missions:PROG.missions,p_dir:PROG.dir,p_extra:PROG.extra,p_qdone:PROG.qdone,p_qok:PROG.qok}); }catch(e){ setTimeout(pushProgress, 5000); }
+}
+
+/* 닉네임 변경 요청 */
+$("#nickReqBtn").addEventListener("click", ()=>{
+  const inp = el("input",{type:"text",maxlength:"10",placeholder:"새 닉네임 (2~10자)"});
+  const er = el("div",{class:"err"});
+  const m = modal(el("h3",{text:"✏️ 닉네임 변경 요청"}),
+    el("div",{class:"notice warn",text:"⚠️ 실명은 쓰지 마세요. 선생님이 승인하면 바뀌어요."}),
+    el("div",{class:"row",style:"margin-top:12px"}, inp, el("button",{class:"btn amber",style:"font-size:24px;padding:8px 14px",onclick:()=>{inp.value=randomNick();}},"🎲")),
+    er,
+    el("div",{class:"acts"}, el("button",{class:"btn ghost",onclick:()=>m.close()},"취소"),
+      el("button",{class:"btn",onclick:async()=>{
+        const n = inp.value.trim().replace(/\s+/g," ");
+        if (n.length<2||n.length>10||!/^[가-힣A-Za-z0-9 ]+$/.test(n)){ er.textContent=ERRMSG.bad_nick; return; }
+        try{ const r = await rpc("buoy_request_nick",{p_sid:ME.sid,p_token:ME.token,p_nick:n});
+          if (!r.ok){ er.textContent = ERRMSG[r.err]||"요청하지 못했어요."; return; }
+          PENDING = n; renderMe(); m.close(); toast("요청을 보냈어요. 선생님이 승인하면 바뀌어요.");
+        }catch(e){ er.textContent = NETERR; }
+      }},"요청 보내기")));
+  setTimeout(()=>inp.focus(),50);
+});
+
+function modal(...kids){
+  const box = el("div",{class:"box"}, ...kids);
+  const m = el("div",{class:"modal"}, box);
+  m.addEventListener("click", e=>{ if (e.target===m) m.close(); });
+  m.close = ()=>m.remove();
+  document.body.append(m);
+  return m;
+}
+
+/* ================== 탭 / 잠금 ================== */
+$$("#tabs button").forEach(b=>b.addEventListener("click", ()=>setTab(b.dataset.t)));
+function isOpen(t){
+  if (MODE==="preview") return true;
+  if (MODE==="public") return t==="wall";
+  return t==="wall" ? (OPEN.wall || OPEN.pub) : OPEN[t];
+}
+function setTab(t){
+  TAB = t;
+  $$("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
+  TABS.forEach(k=>$("#p-"+k).classList.toggle("hidden", k!==t));
+  if (t==="meas") MEAS.show();
+  applyLocks();
+  if (t==="dir") { resizeDir(); drawDir(); }
+  if (t==="wall" && isOpen("wall")) loadWall();
+}
+function applyLocks(){
+  TABS.forEach(k=>{
+    const open = isOpen(k), p = $("#p-"+k);
+    p.querySelector("[data-lock]").classList.toggle("hidden", open);
+    p.querySelector("[data-body]").classList.toggle("hidden", !open);
+    const b = $('#tabs button[data-t="'+k+'"]');
+    b.classList.toggle("locked", !open);
+    const base = TAB_NAMES[k];
+    b.textContent = open ? base : "🔒 "+base.replace(/^\S+\s/,"");
+  });
+  if (TAB==="wall" && isOpen("wall")) loadWall();
+  if (TAB==="dir" && isOpen("dir")) { resizeDir(); drawDir(); }
+}
+
+/* ================== 입장 화면 배경 그림 ================== */
+let heroRaf = null;
+function heroAnim(){
+  const cv = $("#heroCv"), ctx = cv.getContext("2d");
+  cancelAnimationFrame(heroRaf);
+  const items = [{x:120,k:"ball"},{x:330,k:"duck"},{x:560,k:"ball2"},{x:760,k:"float"}];
+  function f(t){
+    if ($("#entry").classList.contains("hidden")) return;
+    t/=1000; ctx.clearRect(0,0,900,260);
+    const wy = 150;
+    for (const it of items){
+      const y = wy - 8 + Math.sin(t*1.6+it.x)*6;
+      ctx.save(); ctx.translate(it.x, y);
+      if (it.k==="ball"||it.k==="ball2"){ ctx.fillStyle = it.k==="ball"?"#FFD34D":"#fff"; ctx.beginPath(); ctx.arc(0,0,it.k==="ball"?32:24,0,7); ctx.fill();
+        ctx.fillStyle="rgba(255,255,255,.6)"; ctx.beginPath(); ctx.arc(-10,-10,8,0,7); ctx.fill(); }
+      else if (it.k==="duck"){ ctx.fillStyle="#FFB020"; ctx.beginPath(); ctx.ellipse(0,0,40,22,0,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(26,-22,16,0,7); ctx.fill();
+        ctx.fillStyle="#FF6A3D"; ctx.beginPath(); ctx.moveTo(40,-22); ctx.lineTo(54,-18); ctx.lineTo(40,-14); ctx.fill(); ctx.fillStyle="#12324A"; ctx.beginPath(); ctx.arc(30,-26,3,0,7); ctx.fill(); }
+      else { ctx.fillStyle="#E8473B"; ctx.fillRect(-8,-40,16,30); ctx.fillStyle="#fff"; ctx.fillRect(-8,-10,16,26); ctx.fillStyle="#12324A"; ctx.fillRect(-2,-56,4,16); }
+      ctx.restore();
+    }
+    const g = ctx.createLinearGradient(0,wy,0,260); g.addColorStop(0,"rgba(255,255,255,.45)"); g.addColorStop(1,"rgba(255,255,255,.15)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0,260);
+    for (let x=0;x<=900;x+=10) ctx.lineTo(x, wy + Math.sin(x/45 + t*2)*4);
+    ctx.lineTo(900,260); ctx.fill();
+    for (let i=0;i<10;i++){ const bx=(i*97+40)%900, by=260-((t*30+i*53)%110); ctx.strokeStyle="rgba(255,255,255,.7)"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(bx,by,4+i%3,0,7); ctx.stroke(); }
+    heroRaf = requestAnimationFrame(f);
+  }
+  heroRaf = requestAnimationFrame(f);
+}
+
+/* =====================================================================
+   🧪 실험실 — 교과서 166쪽 해 보기
+   ===================================================================== */
+const LAB = {
+  W:640, H:560, yb:514, mlPx:0.364, maxMl:1000, L0:112,
+  vol:0, L:0, v:0, pour:0, showArrows:false, ball:"styro", t:0, settle:0, bubbles:[]
+};
+const BALLS = {
+  styro:{name:"스타이로폼 구", r:46, W:14, B:92, c1:"#FFD447", c2:"#F2A900"},
+  pp:{name:"탁구공", r:30, W:8, B:92*Math.pow(30/46,3), c1:"#FFFFFF", c2:"#E7D9C4"}
+};
+const springBaseY = LAB.yb - 12;
+function ballCfg(){ return BALLS[LAB.ball]; }
+function Linit(){ return LAB.L0 - ballCfg().W; }
+LAB.L = Linit();
+function waterY(){ return LAB.yb - LAB.vol*LAB.mlPx; }
+function geom(){
+  const b = ballCfg(), top = springBaseY - LAB.L;
+  return {top, bottom: top-6, cy: top-6-b.r, r:b.r};
+}
+function subFrac(){
+  const g = geom(), wy = waterY();
+  const d = Math.max(0, Math.min(2*g.r, g.bottom - wy));
+  const V = Math.PI*d*d*(3*g.r-d)/3, Vt = 4/3*Math.PI*g.r**3;
+  return V/Vt;
+}
+const labCv = $("#labCv"), lctx = labCv.getContext("2d");
+function setupCanvas(cv, W, H){
+  const dpr = Math.min(2, window.devicePixelRatio||1);
+  cv.width = W*dpr; cv.height = H*dpr;
+  const c = cv.getContext("2d"); c.setTransform(dpr,0,0,dpr,0,0); return c;
+}
+setupCanvas(labCv, LAB.W, LAB.H);
+
+function holdBtn(btn, val){
+  const on = e=>{ e.preventDefault(); LAB.pour = val; btn.style.filter="brightness(.92)"; };
+  const off = ()=>{ if (LAB.pour===val) LAB.pour = 0; btn.style.filter=""; };
+  btn.addEventListener("pointerdown", on);
+  ["pointerup","pointerleave","pointercancel"].forEach(ev=>btn.addEventListener(ev, off));
+  btn.addEventListener("contextmenu", e=>e.preventDefault());
+  btn.addEventListener("keydown", e=>{ if(e.key===" "||e.key==="Enter"){ LAB.pour=val; } });
+  btn.addEventListener("keyup", off);
+}
+holdBtn($("#pourBtn"), 1); holdBtn($("#drainBtn"), -1);
+$("#resetLab").addEventListener("click", ()=>{ LAB.vol=0; LAB.L=Linit(); LAB.v=0; LAB.bubbles=[]; });
+const arrowToggle = $("#arrowToggle");
+function setArrows(on){
+  LAB.showArrows = on; arrowToggle.classList.toggle("on", on); arrowToggle.setAttribute("aria-checked", on);
+  $("#arrowLegend").classList.toggle("hidden", !on); renderMission();
+}
+arrowToggle.addEventListener("click", ()=>setArrows(!LAB.showArrows));
+arrowToggle.addEventListener("keydown", e=>{ if(e.key===" "||e.key==="Enter"){ e.preventDefault(); setArrows(!LAB.showArrows);} });
+$$("#ballSeg button").forEach(b=>b.addEventListener("click", ()=>{
+  if (b.dataset.b==="pp" && (PROG.missions&15)!==15 && MODE!=="preview"){ toast("미션 4개를 먼저 마쳐 보세요!"); return; }
+  LAB.ball = b.dataset.b; $$("#ballSeg button").forEach(x=>x.classList.toggle("on", x===b));
+  LAB.L = Linit(); LAB.v = 0; LAB.vol = 0;
+}));
+
+function stepLab(dt){
+  const b = ballCfg();
+  LAB.vol = Math.max(0, Math.min(LAB.maxMl, LAB.vol + LAB.pour*170*dt));
+  if (LAB.pour>0 && Math.random()<0.5) LAB.bubbles.push({x:405+Math.random()*30, y:waterY()+4, r:2+Math.random()*3});
+  // 힘(위쪽 +): 용수철, 중력, 부력
+  const sub = n=>{
+    const f = subFrac();
+    const F = (LAB.L0 - LAB.L) - b.W + b.B*f;
+    const c = 4 + 9*f;
+    const a = 38*F - c*LAB.v;
+    LAB.v += a*n; LAB.L += LAB.v*n;
+    LAB.L = Math.max(40, Math.min(LAB.L0+130, LAB.L));
+  };
+  for (let i=0;i<4;i++) sub(dt/4);
+  LAB.bubbles.forEach(p=>{ p.y -= 60*dt; }); LAB.bubbles = LAB.bubbles.filter(p=>p.y > waterY()+2 && p.y < LAB.yb);
+}
+
+function arrow(ctx, x1,y1,x2,y2, color, w){
+  const len = Math.hypot(x2-x1,y2-y1); if (len<2) return;
+  const ang = Math.atan2(y2-y1,x2-x1), h = Math.min(20, Math.max(12, len*0.4));
+  ctx.save(); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=w||7; ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2-Math.cos(ang)*h*0.7, y2-Math.sin(ang)*h*0.7); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-Math.cos(ang-0.45)*h, y2-Math.sin(ang-0.45)*h);
+  ctx.lineTo(x2-Math.cos(ang+0.45)*h, y2-Math.sin(ang+0.45)*h); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function label(ctx, txt, x, y, color, size, align){
+  ctx.save(); ctx.font = "700 "+(size||21)+"px 'Noto Sans KR', sans-serif"; ctx.textAlign = align||"left"; ctx.textBaseline="middle";
+  ctx.lineWidth = 5; ctx.strokeStyle="rgba(255,255,255,.92)"; ctx.strokeText(txt,x,y); ctx.fillStyle=color; ctx.fillText(txt,x,y); ctx.restore();
+}
+function drawSpring(ctx, x, y0, y1, coils, w){
+  ctx.save(); ctx.strokeStyle="#6B7C88"; ctx.lineWidth=4; ctx.lineJoin="round";
+  ctx.beginPath(); ctx.moveTo(x, y0);
+  const n = coils*2, h = (y1-y0)/(n+1);
+  ctx.lineTo(x, y0 + h*0.5);
+  for (let i=1;i<=n;i++) ctx.lineTo(x + (i%2? w: -w), y0 + h*(i+0.5) - h*0.5 + h*0.5);
+  ctx.lineTo(x, y1); ctx.stroke();
+  ctx.strokeStyle="rgba(255,255,255,.55)"; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.restore();
+}
+function cup(ctx, x, y, up){ // 흡착판
+  ctx.save(); ctx.fillStyle="rgba(70,160,230,.75)"; ctx.strokeStyle="#2C7FB8"; ctx.lineWidth=2;
+  ctx.beginPath();
+  if (up){ ctx.moveTo(x-24,y); ctx.quadraticCurveTo(x,y-18,x+24,y); ctx.closePath(); }
+  else { ctx.moveTo(x-24,y); ctx.quadraticCurveTo(x,y+16,x+24,y); ctx.closePath(); }
+  ctx.fill(); ctx.stroke(); ctx.fillRect(x-6, up? y-24: y, 12, 8); ctx.restore();
+}
+function drawLab(){
+  const ctx = lctx, W=LAB.W, H=LAB.H, b = ballCfg(), g = geom(), wy = waterY(), f = subFrac();
+  ctx.clearRect(0,0,W,H);
+  // 책상
+  ctx.fillStyle="#E7D6BC"; ctx.fillRect(0,522,W,H-522); ctx.fillStyle="#D4BE9C"; ctx.fillRect(0,522,W,5);
+  const bx0=170, bx1=470, by0=108;
+  // 비커 뒷면
+  ctx.fillStyle="rgba(255,255,255,.55)"; ctx.fillRect(bx0,by0,bx1-bx0,LAB.yb-by0);
+  // 눈금
+  ctx.save(); ctx.strokeStyle="rgba(60,90,110,.55)"; ctx.fillStyle="rgba(40,70,90,.75)"; ctx.font="600 14px 'Noto Sans KR'"; ctx.lineWidth=2;
+  for (let m=100;m<=1000;m+=100){ const y=LAB.yb-m*LAB.mlPx; const big=m%200===0; ctx.beginPath(); ctx.moveTo(bx0+6,y); ctx.lineTo(bx0+(big?36:22),y); ctx.stroke(); if(big) ctx.fillText(m+"",bx0+40,y+5); }
+  ctx.fillText("mL", bx0+40, by0+22);
+  ctx.restore();
+  // 아래 흡착판 + 용수철 + 위 흡착판
+  cup(ctx, 320, LAB.yb, true);
+  drawSpring(ctx, 320, springBaseY, g.top, 9, 15);
+  // 처음 길이 표시 (초록 점선)
+  const initTop = springBaseY - Linit();
+  ctx.save(); ctx.setLineDash([9,7]); ctx.strokeStyle="#1E9E62"; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(250, initTop); ctx.lineTo(392, initTop); ctx.stroke(); ctx.restore();
+  label(ctx, "처음", 246, initTop, "#16804F", 18, "right");
+  // 빵 끈 (눈금 지시기)
+  ctx.save(); ctx.strokeStyle="#F2B705"; ctx.lineWidth=6; ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(326,g.top-2); ctx.lineTo(372,g.top-2); ctx.stroke();
+  ctx.strokeStyle="#C98F00"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(328,g.top-2); ctx.lineTo(372,g.top-2); ctx.stroke(); ctx.restore();
+  cup(ctx, 320, g.top, false);
+  // 공
+  const grd = ctx.createRadialGradient(320-b.r*0.35, g.cy-b.r*0.4, b.r*0.15, 320, g.cy, b.r);
+  grd.addColorStop(0, "#FFFFFF"); grd.addColorStop(0.25, b.c1); grd.addColorStop(1, b.c2);
+  ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(320, g.cy, b.r, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = LAB.ball==="pp" ? "rgba(150,120,80,.7)" : "rgba(190,130,0,.45)"; ctx.lineWidth = 2; ctx.stroke();
+  if (LAB.ball==="styro"){ ctx.fillStyle="rgba(200,140,0,.18)"; for(let i=0;i<26;i++){ const a=i*2.4, rr=(i*13%b.r)*0.9; ctx.beginPath(); ctx.arc(320+Math.cos(a)*rr, g.cy+Math.sin(a)*rr, 2.2, 0, 7); ctx.fill(); } }
+  // 물줄기 + 물병
+  const pouring = LAB.pour>0 && LAB.vol<LAB.maxMl;
+  const pAng = pouring ? -0.85 : -0.25;
+  if (pouring){
+    ctx.save(); ctx.fillStyle="rgba(90,175,235,.75)";
+    ctx.beginPath(); ctx.moveTo(452,92); ctx.quadraticCurveTo(430,120,424,wy); ctx.lineTo(436,wy); ctx.quadraticCurveTo(440,122,460,96); ctx.fill(); ctx.restore();
+  }
+  ctx.save(); ctx.translate(470,86); ctx.rotate(pAng);
+  ctx.fillStyle="rgba(255,255,255,.75)"; ctx.strokeStyle="rgba(90,120,140,.8)"; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(-12,-6); ctx.lineTo(70,-6); ctx.lineTo(66,-84); ctx.lineTo(-6,-84); ctx.lineTo(-20,-90); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle="rgba(90,175,235,.55)"; ctx.fillRect(-8,-50,74,42);
+  ctx.restore();
+  // 물
+  if (LAB.vol>0.5){
+    ctx.save(); ctx.beginPath(); ctx.rect(bx0+3, by0, bx1-bx0-6, LAB.yb-by0); ctx.clip();
+    const wg = ctx.createLinearGradient(0,wy,0,LAB.yb); wg.addColorStop(0,"rgba(85,180,235,.38)"); wg.addColorStop(1,"rgba(30,120,200,.5)");
+    ctx.fillStyle = wg; ctx.beginPath(); ctx.moveTo(bx0, LAB.yb);
+    for (let x=bx0;x<=bx1;x+=6) ctx.lineTo(x, wy + Math.sin(x/18 + LAB.t*4)*(pouring?2.4:1.1));
+    ctx.lineTo(bx1, LAB.yb); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle="rgba(20,110,190,.55)"; ctx.lineWidth=2; ctx.beginPath();
+    for (let x=bx0;x<=bx1;x+=6) { const y=wy + Math.sin(x/18 + LAB.t*4)*(pouring?2.4:1.1); x===bx0?ctx.moveTo(x,y):ctx.lineTo(x,y); } ctx.stroke();
+    ctx.strokeStyle="rgba(255,255,255,.8)"; ctx.lineWidth=1.5;
+    LAB.bubbles.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.stroke(); });
+    ctx.restore();
+  }
+  // 비커 테두리
+  ctx.save(); ctx.strokeStyle="rgba(80,110,130,.85)"; ctx.lineWidth=4; ctx.lineJoin="round";
+  ctx.beginPath(); ctx.moveTo(bx0-8,by0-4); ctx.lineTo(bx0,by0+6); ctx.lineTo(bx0,LAB.yb+4); ctx.quadraticCurveTo(bx0,LAB.yb+8,bx0+8,LAB.yb+8);
+  ctx.lineTo(bx1-8,LAB.yb+8); ctx.quadraticCurveTo(bx1,LAB.yb+8,bx1,LAB.yb+4); ctx.lineTo(bx1,by0); ctx.stroke();
+  ctx.strokeStyle="rgba(255,255,255,.9)"; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(bx1-16,by0+30); ctx.lineTo(bx1-16,LAB.yb-30); ctx.stroke();
+  ctx.restore();
+  label(ctx, "비커(1000 mL)", 320, 540, "#4B6578", 17, "center");
+  // 화살표
+  if (LAB.showArrows){
+    const s = 2.2, gl = b.W*s, bl = b.B*f*s;
+    arrow(ctx, 320, g.cy, 320, g.cy+gl+6, "#2563EB", 7);
+    label(ctx, "중력", 334, g.cy+gl+4, "#1D4ED8", 21);
+    if (bl>3){ arrow(ctx, 320, g.cy, 320, g.cy-bl, "#E8473B", 8); label(ctx, "물이 밀어 올리는 힘", 334, g.cy-bl+10, "#C2281E", 21); }
+    ctx.fillStyle="#12324A"; ctx.beginPath(); ctx.arc(320,g.cy,5,0,7); ctx.fill();
+  }
+  // 막대 비교
+  const sc = 0.72;
+  $("#barInit").style.height = (Linit()*sc)+"px";
+  $("#barNow").style.height = (LAB.L*sc)+"px";
+}
+
+let labLast = 0;
+function labLoop(ts){
+  const dt = Math.min(0.04, (ts-labLast)/1000 || 0.016); labLast = ts;
+  LAB.t += dt;
+  if (!$("#app").classList.contains("hidden") && TAB==="lab" && isOpen("lab")){
+    stepLab(dt); drawLab(); checkM1(dt);
+  }
+  requestAnimationFrame(labLoop);
+}
+requestAnimationFrame(labLoop);
+
+/* ---------- 미션 ---------- */
+const MISSIONS = [
+  {icon:"💧", title:"물을 부어 보자", txt:"‘💧 물 붓기’ 버튼을 꾹 누르고 있으면 물이 들어가요. 스타이로폼 구가 물에 완전히 잠길 때까지 물을 부으면서 용수철을 잘 보세요!", auto:true},
+  {icon:"📏", title:"용수철 길이 관찰", txt:"스타이로폼 구가 물에 잠길수록 용수철의 길이는 어떻게 되었나요? 노란 빵 끈과 초록 점선(처음 길이)을 비교해 보세요.",
+    ch:["처음보다 줄어들었다","처음과 같다","처음보다 늘어났다"], ans:2,
+    wrong:"다시 관찰해 보세요! ‘🚰 물 빼기’로 물을 뺐다가 다시 부으면서, 노란 빵 끈이 초록 점선보다 위에 있는지 아래에 있는지 보세요.",
+    right:"맞아요! 물을 부으니 용수철이 처음보다 늘어났어요. 무엇이 구를 위로 끌어올린 걸까요? 다음 미션에서 알아봐요."},
+  {icon:"⬆️", title:"힘의 방향 찾기", txt:"‘➡️ 화살표 보기’를 켜고, 구가 물에 잠겼을 때를 보세요. 물은 스타이로폼 구를 어느 쪽으로 밀고 있나요?",
+    ch:["⬆️ 위쪽","⬇️ 아래쪽","↔️ 옆쪽"], ans:0, needArrows:true,
+    wrongBy:{1:"아래쪽 파란 화살표는 지구가 잡아당기는 ‘중력’이에요. 빨간 화살표를 보세요!", 2:"빨간 화살표가 어느 쪽을 가리키는지 다시 보세요."},
+    right:"맞아요! 물은 물에 잠긴 스타이로폼 구를 위쪽으로 밀어 올려요. 이 힘은 중력과 반대 방향인 위쪽으로 작용해요. 이 힘의 이름은 교과서를 읽으며 알아봐요!"},
+  {icon:"⚖️", title:"무게는 줄어들까?", txt:"물을 부었다 뺐다 하면서 파란 ‘중력’ 화살표의 길이를 보세요. 구가 물에 잠기면 구에 작용하는 중력(무게)은 어떻게 될까요?",
+    ch:["줄어든다","변하지 않는다","늘어난다"], ans:1, needArrows:true,
+    wrong:"파란 화살표의 길이가 정말 바뀌었나요? 물을 붓고 빼면서 다시 비교해 보세요.",
+    right:"맞아요! 물속에서도 중력(무게)은 그대로예요. 물이 위쪽으로 밀어 올리는 힘이 함께 작용해서 가볍게 ‘느껴지는’ 거예요. 그래서 ‘무게가 줄었다’가 아니라 ‘가볍게 느껴진다’라고 말해요."}
+];
+let viewM = null;            // 보고 있는 미션 번호 (null이면 현재 미션)
+const mState = {};           // {i:{picked, msg}}
+function curMission(){ for (let i=0;i<4;i++) if (!(PROG.missions & (1<<i))) return i; return 4; }
+function doneM(i){ return !!(PROG.missions & (1<<i)); }
+let m1Timer = 0;
+function checkM1(dt){
+  if (doneM(0)) return;
+  if (subFrac() > 0.995 && Math.abs(LAB.v) < 25){ m1Timer += dt; if (m1Timer > 0.6) completeMission(0); }
+  else m1Timer = 0;
+}
+function completeMission(i){
+  if (doneM(i)) return;
+  PROG.missions |= (1<<i); saveProgress();
+  if (i===0){ mState[0] = {msg:"✅ 스타이로폼 구가 물에 완전히 잠겼어요! 용수철이 어떻게 되었는지 기억해 두세요."}; viewM = 0; }
+  renderMission();
+}
+function renderMission(){
+  const box = $("#missionBox"); if (!box) return;
+  const cur = curMission();
+  const i = viewM==null ? cur : viewM;
+  box.innerHTML = ""; box.classList.toggle("complete", i===4);
+  const dots = el("div",{class:"dots"});
+  for (let k=0;k<5;k++){
+    const done = k<4 ? doneM(k) : cur===4;
+    const b = el("button",{class:(done?"done ":"")+(k===i?"cur":""), title: k<4? "미션 "+(k+1) : "교과서", disabled: k>cur, onclick:()=>{ viewM = (k===cur? null : k); renderMission(); }}, k<4? String(k+1) : "📖");
+    dots.append(b);
+  }
+  if (i===4){
+    box.append(el("div",{class:"head"}, el("span",{class:"tag",text:"🎉 실험 완료"}), el("h3",{text:"이제 교과서에 직접 써 볼 차례!"}), dots),
+      el("div",{class:"bookq"},
+        el("div",{style:"font-weight:900;font-size:21px"},"📖 교과서 166쪽 ‘해 보기’ 1번, 2번에 답을 직접 써 보세요."),
+        el("ol",{}, el("li",{text:"스타이로폼 구가 물에 잠길수록 용수철의 길이는 어떻게 변하는지 이야기해 보자."}),
+                    el("li",{text:"스타이로폼 구가 물속에서 받은 힘을 용수철의 길이 변화와 관련지어 이야기해 보자."})),
+        el("div",{style:"font-size:17px;color:#6B5200"},"✏️ 2번은 ‘용수철이 어떻게 변했다 → 그래서 구에 어느 쪽으로 힘이 작용했다’처럼 길이 변화와 힘의 방향을 이어서 써요. 다 쓰면 ‘더 알아보기’에서 탁구공으로도 실험해 보세요!")));
+    $("#ballHint").textContent = "탁구공으로 바꾸면 물이 밀어 올리는 힘과 용수철 길이가 어떻게 달라지는지 비교해 보세요.";
+    return;
+  }
+  const M = MISSIONS[i], st = mState[i] || {};
+  box.append(el("div",{class:"head"}, el("span",{class:"tag",text:"미션 "+(i+1)+" / 4"}), el("h3",{text:M.icon+" "+M.title}), dots));
+  box.append(el("div",{class:"txt",text:M.txt}));
+  if (M.ch){
+    const locked = M.needArrows && !LAB.showArrows && !doneM(i);
+    if (locked) box.append(el("div",{class:"notice warn",style:"margin-top:8px"},"👉 먼저 오른쪽(아래)의 ‘➡️ 화살표 보기’를 켜 보세요."));
+    const ch = el("div",{class:"choices"});
+    M.ch.forEach((c,k)=>{
+      let cls = "";
+      if (doneM(i) && k===M.ans) cls = "right";
+      else if (st.wrong && st.wrong.includes(k)) cls = "wrong";
+      ch.append(el("button",{class:cls, disabled: locked || doneM(i), onclick:()=>answer(i,k)}, c));
+    });
+    box.append(ch);
+  }
+  const msg = doneM(i) ? (M.right || st.msg) : st.msg;
+  if (msg) box.append(el("div",{class:"notice "+(doneM(i)?"ok":"bad")+" fb",text:msg}));
+  if (doneM(i)) box.append(el("div",{style:"text-align:right;margin-top:8px"}, el("button",{class:"btn",onclick:()=>{ viewM=null; renderMission(); }}, cur===4 ? "📖 교과서 쓰기로 ▶" : "다음 미션 ▶")));
+}
+function answer(i,k){
+  const M = MISSIONS[i]; mState[i] = mState[i] || {wrong:[]}; mState[i].wrong = mState[i].wrong||[];
+  if (k===M.ans){ mState[i].msg = null; PROG.missions |= (1<<i); saveProgress(); viewM = i; }
+  else { mState[i].wrong.push(k); mState[i].msg = (M.wrongBy && M.wrongBy[k]) || M.wrong || "다시 생각해 보세요!"; }
+  renderMission();
+}
+
+/* =====================================================================
+   🧭 부력 방향 찾기
+   ===================================================================== */
+const DW=640, DH=440;
+const dirCv = $("#dirCv"); let dctx = setupCanvas(dirCv, DW, DH);
+function resizeDir(){ dctx = setupCanvas(dirCv, DW, DH); }
+const SCENES = [
+  {key:"ship", name:"물에 떠 있는 배", water:232, cx:320, cy:214, R:115, g:62, b:62, anim:"bob",
+   prompt:"무거운 짐을 실은 배가 물에 떠 있어요. 배에 작용하는 부력을 화살표로 그려 보세요.",
+   explain:"무거운 배도 물이 위로 밀어 올리는 부력이 중력만큼 커서 물에 떠 있을 수 있어요."},
+  {key:"hotair", name:"하늘로 오르는 열기구", water:null, cx:320, cy:160, R:105, g:52, b:80, anim:"rise",
+   prompt:"열기구가 하늘로 올라가고 있어요. 열기구에 작용하는 부력을 화살표로 그려 보세요.",
+   explain:"공기(기체) 속에 있는 물체에도 부력이 작용해요. 열기구는 속의 공기를 데워 아주 가볍게 만들어서, 공기의 부력이 중력보다 커져 위로 올라가요. (‘🎈 공기 중의 부력’ 탭에서 더 알아봐요)"},
+  {key:"helium", name:"헬륨 풍선", water:null, cx:320, cy:170, R:80, g:24, b:56, anim:"rise",
+   prompt:"손을 놓친 헬륨 풍선이에요. 풍선에 작용하는 부력을 화살표로 그려 보세요.",
+   explain:"헬륨 풍선은 속에 공기보다 훨씬 가벼운 헬륨 기체가 들어 있어 아주 가벼워요. 그래서 공기의 부력이 중력보다 커서 위로 떠올라요. (‘🎈 공기 중의 부력’ 탭에서 더 알아봐요)"},
+  {key:"jacket", name:"구명조끼를 입은 사람", water:236, cx:320, cy:232, R:120, g:58, b:58, anim:"bob",
+   prompt:"구명조끼를 입고 물에 떠 있어요. 사람에게 작용하는 부력을 화살표로 그려 보세요.",
+   explain:"구명조끼를 입으면 부력이 커져서 물에 쉽게 떠요."},
+  {key:"rock", name:"가라앉는 돌", water:120, cx:320, cy:290, R:70, g:76, b:30, anim:"sink",
+   prompt:"돌이 물속으로 가라앉고 있어요. 그래도 부력이 작용할까요? 돌에 작용하는 부력을 그려 보세요.",
+   explain:"돌이 가라앉고 있어도 부력은 위쪽으로 작용해요! 중력이 부력보다 커서 가라앉는 거예요."},
+  {key:"sub", name:"비스듬히 내려가는 잠수함", water:100, cx:300, cy:280, R:110, g:56, b:56, anim:"diag",
+   prompt:"잠수함이 비스듬히 아래로 움직이고 있어요. 잠수함에 작용하는 부력을 화살표로 그려 보세요.",
+   explain:"잠수함이 어느 쪽으로 움직이든 부력은 언제나 위쪽(중력과 반대 방향)으로 작용해요."},
+  {key:"float", name:"물에 뜬 낚시찌", water:236, cx:320, cy:228, R:70, g:40, b:40, anim:"bob",
+   prompt:"낚시찌가 물에 떠 있어요. 낚시찌에 작용하는 부력을 화살표로 그려 보세요.",
+   explain:"낚시찌는 부력 때문에 물에 떠 있어요. 물고기가 미끼를 물면 찌가 아래로 끌려 내려가요."},
+  {key:"ball", name:"물속으로 누른 공", water:190, cx:320, cy:300, R:65, g:16, b:72, anim:"pop",
+   prompt:"손으로 공을 물속에 꾹 누르고 있어요. 공에 작용하는 부력을 화살표로 그려 보세요.",
+   explain:"물속으로 누른 공에도 부력이 위로 작용해요. 손을 놓으면 부력 때문에 공이 위로 튀어 올라요!"}
+];
+let dIdx = 0;
+const dSt = SCENES.map(()=>({tries:0, solved:false, hint:false, reveal:false, arrow:null, msg:null, cls:null}));
+let drawing = null, animT = -1, animStart = 0;
+function solvedD(i){ return !!(PROG.dir & (1<<i)) || dSt[i].solved; }
+
+function renderDirNav(){
+  const nav = $("#dirNav"); if (!nav) return; nav.innerHTML = "";
+  SCENES.forEach((s,i)=> nav.append(el("button",{class:(i===dIdx?"on ":"")+(solvedD(i)?"done":""), title:s.name, onclick:()=>{ dIdx=i; animT=-1; renderDir(); }}, solvedD(i)? "✓" : String(i+1))));
+  const n = SCENES.filter((s,i)=>solvedD(i)).length;
+  nav.append(el("span",{class:"chip",style:"margin-left:auto;align-self:center"}, "완료 "+n+" / "+SCENES.length));
+}
+function renderDir(){
+  renderDirNav();
+  const s = SCENES[dIdx], st = dSt[dIdx];
+  $("#dirNum").textContent = "상황 "+(dIdx+1)+" / "+SCENES.length;
+  $("#dirTitle").textContent = s.name;
+  $("#dirPrompt").textContent = s.prompt;
+  const fb = $("#dirFb"); fb.innerHTML = "";
+  const done = solvedD(dIdx);
+  if (done && !st.msg) st.msg = null;
+  if (st.msg) fb.append(el("div",{class:"notice "+(st.cls||"info"),text:st.msg}));
+  if (done) fb.append(el("div",{class:"notice ok",style:"margin-top:8px"}, "💡 "+s.explain));
+  else if (st.hint) fb.append(el("div",{class:"notice warn",style:"margin-top:8px"}, "💡 힌트: 파란 화살표는 지구가 물체를 잡아당기는 ‘중력’이에요. 부력은 중력과 반대 방향으로 작용해요."));
+  const acts = $("#dirActs"); acts.innerHTML = "";
+  if (!done && st.tries>=2) acts.append(el("button",{class:"btn amber",onclick:()=>{ st.reveal=true; markSolved(); }},"👀 정답 보기"));
+  if (done) acts.append(el("button",{class:"btn green",onclick:()=>{ animT=0; animStart=performance.now(); }},"▶ 움직여 보기"));
+  if (st.arrow && !done) acts.append(el("button",{class:"btn ghost",onclick:()=>{ st.arrow=null; st.msg=null; renderDir(); drawDir(); }},"지우기"));
+  if (dIdx<SCENES.length-1) acts.append(el("button",{class:"btn ghost",onclick:()=>{ dIdx++; animT=-1; renderDir(); }},"다음 상황 ▶"));
+  drawDir();
+}
+function markSolved(){
+  dSt[dIdx].solved = true; PROG.dir |= (1<<dIdx); saveProgress(); renderDir();
+}
+function vpt(e){
+  const r = dirCv.getBoundingClientRect();
+  return {x:(e.clientX-r.left)*DW/r.width, y:(e.clientY-r.top)*DH/r.height};
+}
+function scenePos(i){
+  const s = SCENES[i]; let x = s.cx, y = s.cy;
+  if (animT>=0 && i===dIdx){
+    const t = animT;
+    if (s.anim==="bob") y += Math.sin(t*3.2)*6;
+    else if (s.anim==="rise") y -= Math.min(t,3)*38;
+    else if (s.anim==="sink") y += Math.min(t,3)*26;
+    else if (s.anim==="diag"){ x += Math.min(t,3)*34; y += Math.min(t,3)*15; }
+    else if (s.anim==="pop"){ const tt = Math.max(0,t-0.4); y -= Math.min(110, tt*tt*160); if (tt>0.83) y += Math.sin((tt-0.83)*7)*5*Math.exp(-(tt-0.83)); }
+  }
+  return {x,y};
+}
+dirCv.addEventListener("pointerdown", e=>{
+  if (solvedD(dIdx) || !isOpen("dir")) return;
+  e.preventDefault(); dirCv.setPointerCapture(e.pointerId);
+  const p = vpt(e); drawing = {x1:p.x,y1:p.y,x2:p.x,y2:p.y}; dSt[dIdx].arrow = drawing; drawDir();
+});
+dirCv.addEventListener("pointermove", e=>{ if (!drawing) return; const p = vpt(e); drawing.x2=p.x; drawing.y2=p.y; drawDir(); });
+const endDraw = ()=>{ if (!drawing) return; const a = drawing; drawing = null; gradeArrow(a); };
+dirCv.addEventListener("pointerup", endDraw); dirCv.addEventListener("pointercancel", ()=>{ drawing=null; });
+function gradeArrow(a){
+  const s = SCENES[dIdx], st = dSt[dIdx];
+  const len = Math.hypot(a.x2-a.x1, a.y2-a.y1);
+  if (len < 28){ st.arrow = null; st.msg = "조금 더 길게 쭉 끌어서 그려 보세요."; st.cls="warn"; renderDir(); return; }
+  const onObj = Math.hypot(a.x1-s.cx, a.y1-s.cy) <= s.R;
+  const ang = Math.atan2(-(a.y2-a.y1), a.x2-a.x1)*180/Math.PI; // 위쪽 = 90
+  if (!onObj){ st.msg = "화살표는 힘을 받는 물체에서부터 그려요. 물체 위에서 시작해 보세요."; st.cls="warn"; renderDir(); return; }
+  if (Math.abs(ang-90) <= 22){
+    st.msg = st.tries===0 ? "🎉 정답! 한 번에 맞혔어요." : "🎉 정답이에요!"; st.cls="ok"; markSolved(); return;
+  }
+  st.tries++;
+  if (Math.abs(ang+90) <= 30) st.msg = s.key==="ball" ? "그건 손이 누르는 힘이나 중력의 방향이에요. 부력은 반대예요!" : "그건 중력의 방향이에요. 부력은 중력과 반대 방향이에요!";
+  else if (s.key==="sub" && ang < -5 && ang > -60) st.msg = "그건 잠수함이 움직이는 방향이에요. 부력은 움직이는 방향과 상관이 있을까요?";
+  else st.msg = "방향을 다시 생각해 보세요.";
+  st.cls = "bad";
+  if (st.tries>=1) st.hint = true;
+  renderDir();
+}
+function sky(ctx, top, bot){
+  const g = ctx.createLinearGradient(0,0,0,DH); g.addColorStop(0,top||"#BFE8FB"); g.addColorStop(1,bot||"#F1FAFE"); ctx.fillStyle=g; ctx.fillRect(0,0,DW,DH);
+}
+function cloud(ctx,x,y,s){ ctx.save(); ctx.fillStyle="rgba(255,255,255,.95)"; ctx.beginPath(); ctx.arc(x,y,22*s,0,7); ctx.arc(x+26*s,y-10*s,26*s,0,7); ctx.arc(x+54*s,y,20*s,0,7); ctx.rect(x,y,54*s,20*s); ctx.fill(); ctx.restore(); }
+function waterBack(ctx, wy){ const g=ctx.createLinearGradient(0,wy,0,DH); g.addColorStop(0,"#5DB8EA"); g.addColorStop(1,"#1F6FB0"); ctx.fillStyle=g; ctx.fillRect(0,wy,DW,DH-wy); }
+function waterFront(ctx, wy, t){
+  ctx.save(); ctx.fillStyle="rgba(60,150,220,.38)"; ctx.beginPath(); ctx.moveTo(0,DH);
+  for (let x=0;x<=DW;x+=8) ctx.lineTo(x, wy+Math.sin(x/30+t*2)*2.5); ctx.lineTo(DW,DH); ctx.fill();
+  ctx.strokeStyle="rgba(255,255,255,.85)"; ctx.lineWidth=2.5; ctx.beginPath();
+  for (let x=0;x<=DW;x+=8){ const y=wy+Math.sin(x/30+t*2)*2.5; x?ctx.lineTo(x,y):ctx.moveTo(x,y); } ctx.stroke(); ctx.restore();
+}
+function drawObj(ctx, s, x, y, t){
+  ctx.save();
+  if (s.key==="ship"){
+    ctx.fillStyle="#3E7CB1"; [[-95,-40],[-55,-40],[-15,-40]].forEach(([dx,dy],i)=>{ ctx.fillStyle=["#F28C28","#3E7CB1","#2BA36B"][i]; ctx.fillRect(x+dx,y+dy-18,36,26); });
+    ctx.fillStyle="#fff"; ctx.fillRect(x+30,y-70,70,58); ctx.fillStyle="#8CCBEB"; for(let i=0;i<3;i++) ctx.fillRect(x+38+i*21,y-60,14,12);
+    ctx.fillStyle="#E8473B"; ctx.fillRect(x+66,y-96,18,28);
+    ctx.fillStyle="#C8473B"; ctx.beginPath(); ctx.moveTo(x-130,y-12); ctx.lineTo(x+130,y-12); ctx.lineTo(x+104,y+42); ctx.lineTo(x-104,y+42); ctx.closePath(); ctx.fill();
+    ctx.fillStyle="#fff"; ctx.fillRect(x-124,y-4,248,7);
+  } else if (s.key==="hotair"){
+    ctx.strokeStyle="#7A5A3A"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x-26,y+70); ctx.lineTo(x-18,y+100); ctx.moveTo(x+26,y+70); ctx.lineTo(x+18,y+100); ctx.stroke();
+    ctx.fillStyle="#A86B34"; ctx.fillRect(x-20,y+98,40,30); ctx.fillStyle="#7E4E22"; ctx.fillRect(x-20,y+98,40,6);
+    ctx.beginPath(); ctx.moveTo(x-26,y+72); ctx.bezierCurveTo(x-120,y-10,x-90,y-110,x,y-110); ctx.bezierCurveTo(x+90,y-110,x+120,y-10,x+26,y+72); ctx.closePath();
+    ctx.save(); ctx.clip(); const cols=["#E8473B","#FFC83D","#2F8FD8","#2BA36B","#FF8A3D","#8E5CD9"];
+    for(let i=0;i<8;i++){ ctx.fillStyle=cols[i%cols.length]; ctx.fillRect(x-120+i*30,y-120,30,200); } ctx.restore();
+    ctx.fillStyle="rgba(255,255,255,.25)"; ctx.beginPath(); ctx.ellipse(x-30,y-60,16,34,-0.3,0,7); ctx.fill();
+  } else if (s.key==="helium"){
+    ctx.strokeStyle="#7A8A96"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x,y+66); for(let k=1;k<=8;k++) ctx.lineTo(x+(k%2?8:-8), y+66+k*20); ctx.stroke();
+    const g=ctx.createRadialGradient(x-18,y-22,6,x,y,64); g.addColorStop(0,"#FFB3C6"); g.addColorStop(1,"#E0315E"); ctx.fillStyle=g;
+    ctx.beginPath(); ctx.ellipse(x,y,52,62,0,0,7); ctx.fill(); ctx.beginPath(); ctx.moveTo(x-7,y+68); ctx.lineTo(x+7,y+68); ctx.lineTo(x,y+60); ctx.fill();
+  } else if (s.key==="jacket"){
+    ctx.fillStyle="#3E63B5"; ctx.fillRect(x-140,y-8,105,20); ctx.fillStyle="#F2C9A0"; ctx.beginPath(); ctx.ellipse(x-146,y+2,10,9,0,0,7); ctx.fill();
+    ctx.fillStyle="#F2C9A0"; ctx.fillRect(x-20,y-30,90,10);
+    ctx.fillStyle="#FF7A1A"; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x-40,y-26,110,46,14) : ctx.rect(x-40,y-26,110,46); ctx.fill();
+    ctx.fillStyle="#FFD54A"; ctx.fillRect(x-20,y-26,8,46); ctx.fillRect(x+40,y-26,8,46);
+    ctx.fillStyle="#F2C9A0"; ctx.beginPath(); ctx.arc(x+92,y-6,20,0,7); ctx.fill(); ctx.fillStyle="#3A2A1E"; ctx.beginPath(); ctx.arc(x+98,y-10,20,Math.PI*1.1,Math.PI*2.1); ctx.fill();
+  } else if (s.key==="rock"){
+    ctx.fillStyle="#7D8790"; ctx.beginPath(); ctx.moveTo(x-50,y+10); ctx.lineTo(x-34,y-34); ctx.lineTo(x+6,y-44); ctx.lineTo(x+46,y-22); ctx.lineTo(x+52,y+20); ctx.lineTo(x+18,y+42); ctx.lineTo(x-30,y+38); ctx.closePath(); ctx.fill();
+    ctx.fillStyle="#9AA4AC"; ctx.beginPath(); ctx.moveTo(x-30,y-28); ctx.lineTo(x+4,y-38); ctx.lineTo(x+20,y-20); ctx.lineTo(x-12,y-10); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle="rgba(255,255,255,.8)"; ctx.lineWidth=2; [[-20,-70,5],[10,-92,4],[-4,-118,6]].forEach(([dx,dy,r])=>{ ctx.beginPath(); ctx.arc(x+dx,y+dy,r,0,7); ctx.stroke(); });
+  } else if (s.key==="sub"){
+    ctx.translate(x,y); ctx.rotate(Math.atan2(15,34));
+    ctx.fillStyle="#F2C230"; ctx.beginPath(); ctx.ellipse(0,0,95,34,0,0,7); ctx.fill();
+    ctx.fillRect(-20,-58,52,30); ctx.fillRect(4,-74,8,18);
+    ctx.fillStyle="#3B6E8F"; [-40,-5,30].forEach(dx=>{ ctx.beginPath(); ctx.arc(dx,0,10,0,7); ctx.fill(); });
+    ctx.fillStyle="#C99A12"; ctx.beginPath(); ctx.moveTo(-95,0); ctx.lineTo(-118,-20); ctx.lineTo(-118,20); ctx.closePath(); ctx.fill();
+  } else if (s.key==="float"){
+    ctx.strokeStyle="#5A6B78"; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(x,y+30); ctx.lineTo(x,DH-30); ctx.stroke(); ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(x+5,DH-30,6,0,Math.PI); ctx.stroke();
+    ctx.fillStyle="#E8473B"; ctx.beginPath(); ctx.ellipse(x,y-2,20,40,0,Math.PI,0); ctx.fill();
+    ctx.fillStyle="#FFFFFF"; ctx.beginPath(); ctx.ellipse(x,y-2,20,50,0,0,Math.PI); ctx.fill(); ctx.strokeStyle="#B8C6CF"; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle="#12324A"; ctx.fillRect(x-3,y-82,6,42);
+  } else if (s.key==="ball"){
+    const segs=["#E8473B","#FFFFFF","#2F8FD8","#FFFFFF","#FFC83D","#FFFFFF"];
+    for(let i=0;i<6;i++){ ctx.fillStyle=segs[i]; ctx.beginPath(); ctx.moveTo(x,y); ctx.arc(x,y,46,i*Math.PI/3,(i+1)*Math.PI/3); ctx.closePath(); ctx.fill(); }
+    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(x,y,9,0,7); ctx.fill();
+  }
+  ctx.restore();
+}
+function drawHand(ctx, x, y){
+  ctx.save(); ctx.fillStyle="#F2C9A0"; ctx.strokeStyle="#C99872"; ctx.lineWidth=2;
+  ctx.fillRect(x-18, y-170, 36, 130); ctx.strokeRect(x-18,y-170,36,130);
+  ctx.beginPath(); ctx.ellipse(x, y-28, 38, 22, 0, 0, 7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle="#3E7CB1"; ctx.fillRect(x-22,y-200,44,40);
+  ctx.restore();
+}
+function drawDir(){
+  if (!dctx) return;
+  const ctx = dctx, s = SCENES[dIdx], st = dSt[dIdx], t = performance.now()/1000;
+  ctx.clearRect(0,0,DW,DH);
+  if (s.water!=null){ sky(ctx,"#CDEFFC","#EAF8FE"); cloud(ctx,60,60,0.8); cloud(ctx,500,46,0.7); waterBack(ctx, s.water); }
+  else { sky(ctx,"#9FDBF7","#E7F7FE"); cloud(ctx,40,80,1); cloud(ctx,470,120,0.9); cloud(ctx,240,380,0.8);
+    ctx.fillStyle="#9ED37A"; ctx.beginPath(); ctx.ellipse(320,470,420,70,0,0,7); ctx.fill(); }
+  const p = scenePos(dIdx);
+  drawObj(ctx, s, p.x, p.y, t);
+  if (s.key==="ball"){ const lift = animT>=0 ? Math.min(160, animT*400) : 0; drawHand(ctx, p.x+0, s.cy-42-lift); }
+  if (s.water!=null) waterFront(ctx, s.water, t);
+  if (s.key==="sub" && !(solvedD(dIdx))){
+    ctx.save(); ctx.setLineDash([8,8]); arrow(ctx, p.x+110, p.y+50, p.x+190, p.y+86, "rgba(60,70,80,.55)", 4); ctx.restore();
+    label(ctx, "움직이는 방향", p.x+130, p.y+112, "#4B5A66", 17);
+  }
+  if (s.key==="ball" && animT<0) label(ctx, "손으로 꾹 누르는 중", 400, s.cy-150, "#4B5A66", 17);
+  // 힌트/정답 화살표
+  const done = solvedD(dIdx);
+  if (st.hint || done){
+    arrow(ctx, p.x, p.y, p.x, p.y+s.g, "#2563EB", 7); label(ctx, "중력", p.x+14, p.y+s.g-6, "#1D4ED8", 20);
+  }
+  if (done){
+    arrow(ctx, p.x, p.y, p.x, p.y-s.b, "#E8473B", 8); label(ctx, "부력", p.x+14, p.y-s.b+12, "#C2281E", 21);
+    ctx.fillStyle="#12324A"; ctx.beginPath(); ctx.arc(p.x,p.y,5,0,7); ctx.fill();
+  }
+  if (st.arrow && !done){
+    const a = st.arrow; arrow(ctx, a.x1,a.y1,a.x2,a.y2, "#FF6A3D", 7);
+    ctx.fillStyle="#FF6A3D"; ctx.beginPath(); ctx.arc(a.x1,a.y1,6,0,7); ctx.fill();
+  }
+}
+function dirLoop(ts){
+  if (TAB==="dir" && !$("#app").classList.contains("hidden") && isOpen("dir")){
+    if (animT>=0){ animT = (ts-animStart)/1000; if (animT>3.6) animT=-1; }
+    drawDir();
+  }
+  if (TAB==="air" && !$("#app").classList.contains("hidden") && isOpen("air")){
+    if (airT>=0) airT = Math.min(3.2, (ts-airStart)/1000);
+    drawAir();
+  }
+  requestAnimationFrame(dirLoop);
+}
+requestAnimationFrame(dirLoop);
+
+/* =====================================================================
+   🎈 더 알아보기: 공기 중에서도 부력을 받을까?
+   (실제 비율: 사과 ≈ 공기의 부력/중력 1/700, 볼링공 ≈ 1/1000, 30cm 헬륨 풍선 ≈ 3배)
+   ===================================================================== */
+const AIR = {
+  apple:{name:"🍎 사과", subj:"사과가", heavy:true, r:44, y:200, g:150, ratio:"약 700분의 1", mm:"약 0.2 mm"},
+  bowl:{name:"🎳 볼링공", subj:"볼링공이", heavy:true, r:54, y:200, g:150, ratio:"약 1000분의 1", mm:"약 0.15 mm"},
+  helium:{name:"🎈 헬륨 풍선", heavy:false, y:150, g:44, b:132},
+  hot:{name:"🔥 열기구", heavy:false, y:190, g:126, b:146}
+};
+const airCv = $("#airCv"); const actx = setupCanvas(airCv, 640, 420);
+let airKey = "apple", airT = -1, airStart = 0, airQDone = false;
+const airSeen = new Set(["apple"]), airWrong = [];
+function renderAir(){
+  const pick = $("#airPick"); pick.innerHTML = "";
+  Object.keys(AIR).forEach(k=> pick.append(el("button",{class:(k===airKey?"on ":"")+(airSeen.has(k)?"seen":""), onclick:()=>{ airKey=k; airSeen.add(k); airT=-1; renderAir(); }}, AIR[k].name)));
+  const o = AIR[airKey], info = $("#airInfo"); info.innerHTML = "";
+  if (o.heavy){
+    info.append(
+      el("div",{class:"notice info"}, "⬇️ ", el("b",{style:"color:#1D4ED8",text:"중력"}), "이 ⬆️ ", el("b",{style:"color:#C2281E",text:"공기의 부력"}), "보다 훨씬 커요. "+o.subj+" 받는 공기의 부력은 중력의 "+o.ratio+"밖에 안 돼요."),
+      el("div",{class:"notice warn"}, "📏 중력 화살표를 15 cm로 그리면, 공기의 부력 화살표는 "+o.mm+"! 연필 선보다도 짧아서 그릴 수가 없어요."),
+      el("div",{class:"notice ok"}, "👉 그래서 보통의 물체는 공기의 부력을 ", el("b",{text:"무시해도"}), " 돼요."));
+  } else {
+    const why = airKey==="helium"
+      ? "헬륨 풍선은 속에 공기보다 훨씬 가벼운 헬륨 기체가 들어 있어서 아주 가벼워요."
+      : "열기구는 속의 공기를 뜨겁게 데워서 아주 가볍게 만들어요.";
+    info.append(
+      el("div",{class:"notice info"}, "⬆️ ", el("b",{style:"color:#C2281E",text:"공기의 부력"}), "이 ⬇️ ", el("b",{style:"color:#1D4ED8",text:"중력"}), "보다 커요!"),
+      el("div",{class:"notice warn",text:"🎈 "+why+" 중력이 아주 작아서 공기의 부력을 무시할 수 없어요."}),
+      el("div",{class:"notice ok"}, "👉 이렇게 아주 가벼운 물체는 공기의 부력을 ", el("b",{text:"꼭 생각해야"}), " 해요."));
+  }
+  const d = $("#airDrop");
+  d.textContent = airT>=0 ? "↺ 다시 하기" : (airKey==="hot" ? "▶ 밧줄 풀어 보기" : "▶ 손 놓아 보기");
+  renderAirQ();
+}
+$("#airDrop").addEventListener("click", ()=>{
+  if (airT>=0) airT = -1; else { airT = 0; airStart = performance.now(); }
+  renderAir();
+});
+function renderAirQ(){
+  const q = $("#airQ"); q.innerHTML = "";
+  if (PROG.extra & 1) airQDone = true;
+  q.append(el("div",{class:"qt",text:"✅ 확인 문제: 사과를 들고 있을 때 공기의 부력을 보통 생각하지 않는 까닭은?"}));
+  const C = [
+    ["공기 중에서는 부력이 전혀 작용하지 않기 때문에", "아니에요! 공기 중에서도 부력은 작용해요. 위에서 중력과 공기의 부력 크기를 다시 비교해 보세요."],
+    ["공기의 부력이 중력에 비해 아주아주 작기 때문에", null],
+    ["무거운 물체에서는 부력이 사라지기 때문에", "부력은 사라지지 않아요. 무거운 물체도 공기의 부력을 받지만, 중력에 비해 아주 작을 뿐이에요."]
+  ];
+  const ch = el("div",{class:"choices"});
+  C.forEach(([t,fb],k)=> ch.append(el("button",{class: airQDone && k===1 ? "right" : (airWrong.includes(k)?"wrong":""), disabled: airQDone, onclick:()=>{
+    if (k===1){ airQDone = true; PROG.extra |= 1; saveProgress(); } else if (!airWrong.includes(k)) airWrong.push(k);
+    airWrong.last = k; renderAirQ();
+  }}, t)));
+  q.append(ch);
+  if (!airQDone && airWrong.length) q.append(el("div",{class:"notice bad fb",text:C[airWrong.last ?? airWrong[airWrong.length-1]][1]}));
+  if (airQDone) q.append(el("div",{class:"notice ok air-sum"},
+    el("b",{style:"font-size:21px",text:"📌 정리"}),
+    el("ul",{},
+      el("li",{text:"물체는 물속뿐 아니라 공기(기체) 중에서도 부력을 받는다."}),
+      el("li",{text:"사과, 볼링공처럼 대부분의 물체는 중력이 공기의 부력보다 수백~수천 배 커서, 공기의 부력은 무시해도 된다."}),
+      el("li",{text:"헬륨 풍선, 열기구처럼 속에 가벼운 기체가 들어 있어 아주 가벼운 물체는 공기의 부력을 꼭 생각해야 한다. 공기의 부력이 중력보다 크면 위로 떠오른다."}))));
+}
+function drawApple(ctx,x,y,r){
+  const g = ctx.createRadialGradient(x-r*.35,y-r*.35,r*.15,x,y,r); g.addColorStop(0,"#FF8A80"); g.addColorStop(1,"#D32F2F");
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x-r*.28,y,r*.78,0,7); ctx.arc(x+r*.28,y,r*.78,0,7); ctx.fill();
+  ctx.strokeStyle="#6D4C2F"; ctx.lineWidth=5; ctx.lineCap="round"; ctx.beginPath(); ctx.moveTo(x,y-r*.65); ctx.lineTo(x+4,y-r*1.05); ctx.stroke();
+  ctx.fillStyle="#43A047"; ctx.beginPath(); ctx.ellipse(x+r*.3,y-r*.95,r*.3,r*.14,-0.5,0,7); ctx.fill();
+}
+function drawBowl(ctx,x,y,r){
+  const g = ctx.createRadialGradient(x-r*.35,y-r*.35,r*.1,x,y,r); g.addColorStop(0,"#5C7CFA"); g.addColorStop(1,"#1A237E");
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill();
+  ctx.fillStyle="#0B0F2E"; [[-14,-18],[4,-26],[2,-6]].forEach(([dx,dy])=>{ ctx.beginPath(); ctx.arc(x+dx,y+dy,6,0,7); ctx.fill(); });
+}
+function drawAir(){
+  const ctx = actx, W=640, H=420, o = AIR[airKey], t = Math.max(0, airT), floor = 400;
+  ctx.clearRect(0,0,W,H);
+  sky(ctx,"#9FDBF7","#EAF8FE"); cloud(ctx,40,70,0.9); cloud(ctx,500,110,0.8);
+  ctx.fillStyle="#9ED37A"; ctx.beginPath(); ctx.ellipse(320,470,440,70,0,0,7); ctx.fill();
+  let x = 320, y = o.y;
+  if (airT>=0){
+    if (o.heavy) y = Math.min(floor-(o.r||40), o.y + 0.5*700*t*t);
+    else y = o.y - (airKey==="helium" ? 95 : 70)*t*t;
+  }
+  // 물체
+  if (airKey==="apple") drawApple(ctx,x,y,o.r);
+  else if (airKey==="bowl") drawBowl(ctx,x,y,o.r);
+  else if (airKey==="helium") drawObj(ctx, SCENES[2], x, y, 0);
+  else {
+    if (airT<0){ ctx.strokeStyle="#7A5A3A"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(x,y+128); ctx.lineTo(x,floor-6); ctx.stroke(); ctx.fillStyle="#5B4332"; ctx.fillRect(x-6,floor-12,12,16); }
+    drawObj(ctx, SCENES[1], x, y, 0);
+  }
+  // 손
+  if (o.heavy){ drawHand(ctx, x, o.y - o.r + (airT>=0 ? -40 : 10)); }
+  else if (airKey==="helium"){
+    const hy = airT>=0 ? o.y+226 : y+226;
+    ctx.fillStyle="#F2C9A0"; ctx.strokeStyle="#C99872"; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.ellipse(x, hy+6, 20, 15, 0, 0, 7); ctx.fill(); ctx.stroke();
+    ctx.fillRect(x-12, hy+16, 24, 60); ctx.strokeRect(x-12,hy+16,24,60);
+  }
+  // 화살표 (바닥에 떨어진 뒤에는 숨김)
+  const landed = o.heavy && airT>=0 && y>=floor-(o.r||40)-0.5;
+  if (!landed){
+  arrow(ctx, x, y, x, y+o.g, "#2563EB", 8); label(ctx, "중력", x+16, y+o.g-8, "#1D4ED8", 22);
+  if (o.heavy){
+    ctx.fillStyle="#E8473B"; ctx.beginPath(); ctx.arc(x,y,6,0,7); ctx.fill();
+    ctx.strokeStyle="#E8473B"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x+6,y); ctx.lineTo(x+o.r+12,y-10); ctx.stroke();
+    label(ctx, "공기의 부력", x+o.r+16, y-14, "#C2281E", 21);
+    label(ctx, "(너무 작아서 안 보여요!)", x+o.r+16, y+14, "#C2281E", 18);
+  } else {
+    arrow(ctx, x, y, x, y-o.b, "#E8473B", 8); label(ctx, "공기의 부력", x+16, y-o.b+14, "#C2281E", 22);
+    ctx.fillStyle="#12324A"; ctx.beginPath(); ctx.arc(x,y,5,0,7); ctx.fill();
+  }
+  }
+  if ((!o.heavy && airT>=2) || landed){
+    label(ctx, o.heavy ? "쿵! 중력이 더 커서 떨어져요" : "부력이 더 커서 떠올라요!", 320, 40, o.heavy ? "#1D4ED8" : "#C2281E", 24, "center");
+  }
+}
+
+/* =====================================================================
+   ⚖️ 부력의 크기 — ① 물속에서 부력 측정하기(168쪽) ② 그림(169쪽) ③ 퀴즈
+   ===================================================================== */
+const MEAS = (function(){
+  const W=640, H=700, TABLE=658, BK={x0:230, x1:430, top:330, bot:650}, WL0=450;
+  const ARM_MIN=70, ARM_MAX=294, WH=34, GAP=64;        // 추 높이, 추 사이 간격
+  const AIR_W = 3.00, PART = [0.17, 0.12, 0.12];        // 교과서 값: 2.83 / 2.71 / 2.59 N (아래 추부터)
+  const cv = $("#measCv"); const ctx = setupCanvas(cv, W, H);
+  const S = {arm:ARM_MIN, v:0, move:0, rec:[null,null,null,null], showArrow:false, sub:"exp",
+             inputs:["","",""], inputBad:[false,false,false], q:0, qWrong:{}, solved:{}, view:null};
+  const ROWS = ["공기 중","(가) 추 1개가 잠길 때","(나) 추 2개가 잠길 때","(다) 추 3개가 잠길 때"];
+  function done(i){ return !!(PROG.extra & (1<<(i+1))); }
+  function cur(){ for (let i=0;i<3;i++) if (!done(i)) return i; return 3; }
+  function setDone(i){ if (done(i)) return; PROG.extra |= (1<<(i+1)); saveProgress(); }
+
+  function geom(){
+    const a = S.arm, sTop = a+16, sBot = a+136, w0 = a+160;
+    const tops = [w0, w0+GAP, w0+2*GAP];               // 0: 맨 위 추, 2: 맨 아래 추
+    let wl = WL0, f = [0,0,0];
+    for (let it=0; it<2; it++){
+      f = tops.map(t=>Math.max(0, Math.min(1, (t+WH - wl)/WH)));
+      wl = WL0 - 3.5*(f[0]+f[1]+f[2]);                  // 잠긴 부피만큼 물이 조금 올라감
+    }
+    // 아래 추부터 잠김: 맨 아래(2)=0.17, 가운데(1)=0.12, 맨 위(0)=0.12
+    const B = f[2]*PART[0] + f[1]*PART[1] + f[0]*PART[2];
+    return {a, sTop, sBot, tops, f, wl, B, read: AIR_W - B};
+  }
+  function state(g){
+    const full = g.f.filter(x=>x>=0.9).length, part = g.f.some(x=>x>0.1 && x<0.9);
+    return {n: full, clean: !part};
+  }
+  function fmt(x){ return (Math.round(x*100)/100).toFixed(2); }
+
+  function draw(){
+    const g = geom();
+    ctx.clearRect(0,0,W,H);
+    // 책상
+    ctx.fillStyle="#E7D6BC"; ctx.fillRect(0,TABLE,W,H-TABLE); ctx.fillStyle="#D4BE9C"; ctx.fillRect(0,TABLE,W,5);
+    // 스탠드
+    ctx.fillStyle="#5B6B78"; ctx.fillRect(40,TABLE-14,150,14);
+    ctx.fillStyle="#8A99A6"; ctx.fillRect(92,40,12,TABLE-54);
+    ctx.fillStyle="#6B7C88"; ctx.fillRect(84,g.a-12,28,24);                 // 집게 잡이
+    ctx.fillStyle="#8A99A6"; ctx.fillRect(104,g.a-5,232,10);                 // 막대
+    ctx.fillStyle="#6B7C88"; ctx.beginPath(); ctx.arc(330,g.a+4,6,0,7); ctx.fill();
+    // 비커 뒤
+    ctx.fillStyle="rgba(255,255,255,.55)"; ctx.fillRect(BK.x0,BK.top,BK.x1-BK.x0,BK.bot-BK.top);
+    // 걸이 + 용수철저울
+    ctx.strokeStyle="#4B5A66"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(330,g.a+8); ctx.lineTo(330,g.sTop); ctx.stroke();
+    ctx.fillStyle="#F59E0B"; roundRect(ctx,302,g.sTop,56,g.sBot-g.sTop,12); ctx.fill();
+    ctx.fillStyle="#D97706"; roundRect(ctx,302,g.sTop,56,18,8); ctx.fill();
+    ctx.fillStyle="#1F2937"; roundRect(ctx,308,g.sTop+28,44,62,6); ctx.fill();
+    ctx.fillStyle="#B5F5C9"; roundRect(ctx,311,g.sTop+31,38,56,4); ctx.fill();
+    ctx.save(); ctx.translate(330,g.sTop+59); ctx.rotate(-Math.PI/2);
+    ctx.fillStyle="#0F3D24"; ctx.font="900 21px 'Noto Sans KR', monospace"; ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillText(fmt(g.read), -2, 0); ctx.restore();
+    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(330,g.sTop+108,6,0,7); ctx.fill();
+    // 고리 + 추
+    ctx.strokeStyle="#4B5A66"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(330,g.sBot); ctx.lineTo(330,g.tops[0]); ctx.stroke();
+    g.tops.forEach((t,i)=>{
+      if (i>0){ ctx.strokeStyle="#4B5A66"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(330,g.tops[i-1]+WH); ctx.lineTo(330,t); ctx.stroke(); }
+      const gr = ctx.createLinearGradient(307,0,353,0); gr.addColorStop(0,"#A16207"); gr.addColorStop(.45,"#FACC15"); gr.addColorStop(1,"#92400E");
+      ctx.fillStyle=gr; roundRect(ctx,307,t+4,46,WH-4,5); ctx.fill();
+      ctx.fillStyle="#CA8A04"; ctx.fillRect(312,t,36,6);
+      ctx.fillStyle="#78350F"; ctx.font="700 12px 'Noto Sans KR'"; ctx.textAlign="center"; ctx.fillText("100 g",330,t+24);
+    });
+    // 물
+    ctx.save(); ctx.beginPath(); ctx.rect(BK.x0+3,BK.top,BK.x1-BK.x0-6,BK.bot-BK.top); ctx.clip();
+    const wg = ctx.createLinearGradient(0,g.wl,0,BK.bot); wg.addColorStop(0,"rgba(85,180,235,.42)"); wg.addColorStop(1,"rgba(30,120,200,.52)");
+    ctx.fillStyle=wg; ctx.fillRect(BK.x0,g.wl,BK.x1-BK.x0,BK.bot-g.wl);
+    ctx.strokeStyle="rgba(20,110,190,.6)"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(BK.x0,g.wl); ctx.lineTo(BK.x1,g.wl); ctx.stroke();
+    ctx.restore();
+    // 비커 테두리
+    ctx.strokeStyle="rgba(80,110,130,.85)"; ctx.lineWidth=4; ctx.lineJoin="round";
+    ctx.beginPath(); ctx.moveTo(BK.x0-8,BK.top-4); ctx.lineTo(BK.x0,BK.top+6); ctx.lineTo(BK.x0,BK.bot); ctx.lineTo(BK.x1,BK.bot); ctx.lineTo(BK.x1,BK.top); ctx.stroke();
+    ctx.strokeStyle="rgba(255,255,255,.9)"; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(BK.x1-14,BK.top+24); ctx.lineTo(BK.x1-14,BK.bot-20); ctx.stroke();
+    label(ctx,"비커(1000 mL)",330,682,"#4B6578",16,"center");
+    // 부력 화살표
+    if (S.showArrow && g.B>0.005){
+      const L = g.B*260, sub = g.tops.map((t,i)=>g.f[i]>0? t+WH*(1-g.f[i]/2):null).filter(x=>x!=null);
+      const y0 = sub.reduce((a,b)=>a+b,0)/sub.length;
+      arrow(ctx, 392, y0, 392, y0-L, "#E8473B", 8);
+      label(ctx,"부력",404,y0-L+12,"#C2281E",22);
+    }
+    // 잡기 안내
+    if (S.arm===ARM_MIN && !S.rec.some(Boolean)) label(ctx,"↕ 추를 끌어 내려 보세요",450,g.tops[1]+16,"#4B5A66",17);
+    // 오른쪽 숫자판
+    $("#measRead").textContent = fmt(g.read)+" N";
+    const st = state(g);
+    $("#measState").textContent = !st.clean ? "추가 물에 반쯤 잠겼어요" : (st.n===0 ? "추가 모두 공기 중에 있어요" : "추 "+st.n+"개가 물에 잠겼어요");
+    $("#measState").className = "rs"+(st.clean?"":" warn");
+  }
+  function roundRect(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+
+  // 조작: 꾹 누르기 + 끌기
+  function hold(btn, dir){
+    const on = e=>{ e.preventDefault(); S.move = dir; };
+    const off = ()=>{ if (S.move===dir) S.move = 0; };
+    btn.addEventListener("pointerdown", on);
+    ["pointerup","pointerleave","pointercancel"].forEach(ev=>btn.addEventListener(ev, off));
+    btn.addEventListener("contextmenu", e=>e.preventDefault());
+  }
+  hold($("#measUp"), -1); hold($("#measDown"), 1);
+  let drag = null;
+  function vy(e){ const r = cv.getBoundingClientRect(); return {x:(e.clientX-r.left)*W/r.width, y:(e.clientY-r.top)*H/r.height}; }
+  cv.addEventListener("pointerdown", e=>{
+    const p = vy(e), g = geom();
+    if (p.x>270 && p.x<400 && p.y>g.sTop-20 && p.y<g.tops[2]+WH+20){ e.preventDefault(); cv.setPointerCapture(e.pointerId); drag = {y:p.y, a:S.arm}; }
+  });
+  cv.addEventListener("pointermove", e=>{ if (!drag) return; const p = vy(e); S.arm = Math.max(ARM_MIN, Math.min(ARM_MAX, drag.a + (p.y-drag.y))); });
+  ["pointerup","pointercancel"].forEach(ev=>cv.addEventListener(ev, ()=>{ drag=null; }));
+  $("#measArrow").addEventListener("click", ()=>{ S.showArrow=!S.showArrow; $("#measArrow").classList.toggle("on",S.showArrow); $("#measArrow").setAttribute("aria-checked",S.showArrow); });
+  $("#measRec").addEventListener("click", ()=>{
+    const g = geom(), st = state(g);
+    if (!st.clean){ toast("추가 반쯤만 잠겼어요. 추가 완전히 잠기도록 조금 더 내리거나 올려 보세요."); return; }
+    // 추가 거의 다 잠긴 위치면 딱 맞는 위치로 맞춰 줌
+    S.arm = [Math.min(S.arm,110),177,234,288][st.n];
+    const v = fmt(geom().read);
+    S.rec[st.n] = v; renderTable();
+    toast("‘"+ROWS[st.n]+"’ 무게 "+v+" N을 기록했어요.");
+    if (S.rec.every(Boolean) && !done(0)){ setDone(0); S.view = 0; }
+    renderTable(); renderMission();
+  });
+
+  function renderTable(){
+    const t = $("#measTable"); t.innerHTML = "";
+    t.append(el("tr",{}, el("th",{text:"상태"}), el("th",{text:"무게(N)"}), el("th",{text:"감소한 무게(N)"})));
+    ROWS.forEach((r,i)=>{
+      const dec = el("td",{});
+      if (i===0) dec.textContent = "—";
+      else if (done(1)) dec.textContent = fmt(AIR_W - (+S.rec[i] || [0,2.83,2.71,2.59][i]));
+      else if (done(0)){
+        const inp = el("input",{type:"text",inputmode:"decimal",maxlength:"5",placeholder:"?",value:S.inputs[i-1],class:S.inputBad[i-1]?"bad":""});
+        inp.addEventListener("input", ()=>{ S.inputs[i-1] = inp.value; S.inputBad[i-1]=false; inp.classList.remove("bad"); });
+        dec.append(inp);
+      } else dec.textContent = "";
+      t.append(el("tr",{class: S.rec[i]? "got":""}, el("td",{class:"l",text:r}), el("td",{text: S.rec[i] || (done(0)? ["3.00","2.83","2.71","2.59"][i] : "")}), dec));
+    });
+  }
+  function checkInputs(){
+    let ok = true;
+    for (let i=1;i<=3;i++){
+      const want = AIR_W - (+S.rec[i] || [0,2.83,2.71,2.59][i]);
+      const got = parseFloat(String(S.inputs[i-1]).replace(/[^\d.]/g,""));
+      const good = Math.abs(got - want) < 0.006;
+      S.inputBad[i-1] = !good; if (!good) ok = false;
+    }
+    if (ok){ setDone(1); S.view = 1; toast("정답! 감소한 무게를 모두 구했어요."); }
+    else toast("빨간 칸을 다시 계산해 보세요. 감소한 무게 = 공기 중 무게 − 물속 무게");
+    renderTable(); renderMission();
+  }
+
+  const QS = [
+    {q:"물속에 잠긴 추의 개수가 늘어날수록, 공기 중에서보다 감소한 무게는 어떻게 변하나요?",
+     ch:["점점 커진다","변하지 않는다","점점 작아진다"], ans:0,
+     wrong:"표의 ‘감소한 무게’ 칸을 위에서 아래로 다시 읽어 보세요.",
+     right:"맞아요! 잠긴 추의 개수가 늘어날수록 감소한 무게도 커져요."},
+    {q:"추를 물속에 잠글 때 감소한 무게는 무엇을 뜻할까요?",
+     ch:["추에 작용하는 부력의 크기","추의 질량이 줄어든 양","추에 작용하는 중력이 줄어든 양"], ans:0,
+     wrong:"물속에서도 추의 질량과 중력은 그대로예요! 그렇다면 용수철저울의 값은 왜 줄었을까요?",
+     right:"맞아요! 물속에 잠긴 추에 위쪽으로 부력이 작용해서, 부력의 크기만큼 용수철저울의 값이 줄어들어요.  부력의 크기 = 공기 중에서 측정한 무게 − 물속에서 측정한 무게"},
+    {q:"물속에 잠긴 추의 부피와 부력의 크기는 어떤 관계가 있을까요?",
+     ch:["잠긴 부피가 클수록 부력이 커진다","잠긴 부피가 클수록 부력이 작아진다","잠긴 부피와 부력은 관계가 없다"], ans:0,
+     wrong:"추가 1개 → 2개 → 3개 잠길수록 물에 잠긴 부피는 커져요. 그때 부력(감소한 무게)은 어떻게 되었나요?",
+     right:"맞아요! 물속에 잠긴 물체의 부피가 클수록 부력의 크기가 커져요."}
+  ];
+  function renderMission(){
+    const box = $("#measMission"); box.innerHTML = "";
+    const c = cur(); const i = S.view==null ? c : S.view;
+    box.classList.toggle("complete", i===3);
+    const dots = el("div",{class:"dots"});
+    for (let k=0;k<4;k++){
+      const d = k<3 ? done(k) : c===3;
+      dots.append(el("button",{class:(d?"done ":"")+(k===i?"cur":""), disabled:k>c, onclick:()=>{ S.view = (k===c? null : k); renderMission(); }}, k<3? String(k+1) : "📖"));
+    }
+    if (i===3){
+      box.append(el("div",{class:"head"}, el("span",{class:"tag",text:"🎉 실험 완료"}), el("h3",{text:"교과서에 직접 써 볼 차례!"}), dots),
+        el("div",{class:"bookq"},
+          el("div",{style:"font-weight:900;font-size:21px"},"📖 교과서 168쪽을 채워 보세요."),
+          el("div",{style:"font-size:18px;margin:4px 0"},"✏️ 실험 그림 아래 ‘무게: (   ) N’ 칸과 3번 ‘감소한 무게’ 칸을 쓰고, 정리하기 1~3번에 답을 써요."),
+          el("ol",{}, el("li",{text:"물속에 잠긴 추의 개수가 늘어날수록 공기 중에서보다 감소한 무게는 어떻게 변하는지 이야기해 보자."}),
+            el("li",{text:"추를 물속에 잠글 때 감소한 무게가 뜻하는 것은 무엇인지 이야기해 보자."}),
+            el("li",{text:"물속에 잠긴 추의 부피와 부력의 크기는 어떤 관계가 있는지 토의해 보자."})),
+          el("div",{style:"text-align:right;margin-top:6px"}, el("button",{class:"btn",onclick:()=>setSub("fig", true)},"② 그림으로 생각하기 ▶"))));
+      return;
+    }
+    const head = (t,h)=>el("div",{class:"head"}, el("span",{class:"tag",text:"미션 "+(i+1)+" / 3"}), el("h3",{text:h}), dots);
+    if (i===0){
+      box.append(head(0,"📋 무게를 측정해 기록하기"),
+        el("div",{class:"txt"},"용수철저울에 추 3개가 달려 있어요. ‘▼ 내리기’를 꾹 누르거나 추를 끌어 내리면서, 공기 중 → 추 1개 → 2개 → 3개가 물에 잠길 때의 무게를 차례로 ‘📋 기록하기’ 하세요."),
+        el("div",{class:"hint-s",text:"추가 완전히 잠겼을 때 기록해요. 기록한 칸: "+S.rec.filter(Boolean).length+" / 4"}));
+      if (done(0)) box.append(el("div",{class:"notice ok fb",text:"✅ 4가지 무게를 모두 기록했어요!"}), nextBtn());
+    } else if (i===1){
+      box.append(head(1,"➖ 감소한 무게 구하기"),
+        el("div",{class:"txt"},"공기 중에서보다 (가)~(다)에서 감소한 무게를 구해 표의 ‘감소한 무게’ 칸에 써 보세요."),
+        el("div",{class:"notice info"},"💡 감소한 무게 = 공기 중에서 측정한 무게 − 물속에서 측정한 무게   (예: 3.00 − 2.83 = ?)"));
+      if (done(1)) box.append(el("div",{class:"notice ok fb",text:"✅ 감소한 무게: 0.17 N, 0.29 N, 0.41 N"}), nextBtn());
+      else box.append(el("div",{style:"text-align:right;margin-top:8px"}, el("button",{class:"btn",onclick:checkInputs},"✔ 확인하기")));
+    } else {
+      const qi = done(2) ? 2 : S.q, Q = QS[qi];
+      const solved = done(2) || !!S.solved[qi];
+      box.append(head(2,"🤔 결과 정리하기 ("+(qi+1)+"/3)"), el("div",{class:"txt",text:Q.q}));
+      const ch = el("div",{class:"choices"}); const wr = S.qWrong[qi]||[];
+      Q.ch.forEach((t,k)=> ch.append(el("button",{class: (solved && k===Q.ans)?"right":(wr.includes(k)?"wrong":""), disabled:solved, onclick:()=>{
+        if (k===Q.ans){ S.solved[qi] = true; if (qi===2){ setDone(2); S.view = 2; } }
+        else (S.qWrong[qi] = S.qWrong[qi]||[]).push(k);
+        renderMission();
+      }}, t)));
+      box.append(ch);
+      if (wr.length && !solved) box.append(el("div",{class:"notice bad fb",text:Q.wrong}));
+      if (solved) box.append(el("div",{class:"notice ok fb",text:Q.right}));
+      if (solved && qi<2 && !done(2)) box.append(el("div",{style:"text-align:right;margin-top:8px"}, el("button",{class:"btn",onclick:()=>{ S.q = qi+1; renderMission(); }},"다음 질문 ▶")));
+      if (done(2)) box.append(nextBtn());
+    }
+    function nextBtn(){ return el("div",{style:"text-align:right;margin-top:8px"}, el("button",{class:"btn",onclick:()=>{ S.view=null; renderMission(); }}, cur()===3? "📖 교과서 쓰기로 ▶" : "다음 미션 ▶")); }
+  }
+  function step(dt){
+    if (S.move) S.arm = Math.max(ARM_MIN, Math.min(ARM_MAX, S.arm + S.move*150*dt));
+  }
+  let last = 0;
+  function loop(ts){
+    const dt = Math.min(0.05, (ts-last)/1000 || 0.016); last = ts;
+    if (TAB==="meas" && S.sub==="exp" && !$("#app").classList.contains("hidden") && isOpen("meas")){ step(dt); draw(); }
+    if (TAB==="meas" && S.sub==="fig" && !$("#app").classList.contains("hidden") && isOpen("meas")) FIG.frame(dt);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  function setSub(k, scroll){
+    S.sub = k;
+    $$("#measNav button").forEach(b=>b.classList.toggle("on", b.dataset.s===k));
+    ["exp","fig","quiz"].forEach(x=>$("#ms-"+x).classList.toggle("hidden", x!==k));
+    if (k==="fig") FIG.render();
+    if (k==="quiz") QZ.render();
+    if (scroll) window.scrollTo({top: $("#tabs").offsetTop - 70, behavior:"smooth"});
+  }
+  $$("#measNav button").forEach(b=>b.addEventListener("click", ()=>setSub(b.dataset.s, true)));
+
+  return {
+    show(){ renderTable(); renderMission(); setSub(S.sub); },
+    reset(){ Object.assign(S,{arm:ARM_MIN,move:0,rec:[null,null,null,null],showArrow:false,inputs:["","",""],inputBad:[false,false,false],q:0,qWrong:{},solved:{},view:null});
+             $("#measArrow").classList.remove("on"); FIG.reset(); },
+    refresh(){ if (TAB==="meas"){ renderTable(); renderMission(); } }
+  };
+})();
+
+/* ---------- ② 교과서 169쪽 그림 V-15: 배와 그릇에 작용하는 부력 ---------- */
+const FIG = (function(){
+  const W=1200, H=640;
+  const cv = $("#figCv"); const ctx = setupCanvas(cv, W, H);
+  const S = {scene:"bowl", load:2, ans:{}, wrong:{}, arrows:{}, d:{L:0,R:0,E:0,F:0}, t:0};
+  const BIT = {bowl:4, ship:5};
+  const QD = {
+    bowl:{q:"두 그릇 중 부력이 더 크게 작용하는 것은 어느 쪽일까요?", ch:["왼쪽 빈 그릇","오른쪽 짐을 올린 그릇","두 그릇이 같다"], ans:1,
+          wrong:"두 그릇에서 점선으로 표시된 ‘물속에 잠긴 부분’의 크기를 비교해 보세요.",
+          right:"맞아요! 짐을 올린 그릇은 물에 더 많이 잠겨서, 물속에 잠긴 부피가 커요. 물속에 잠긴 부피가 클수록 부력의 크기가 커져요."},
+    ship:{q:"빈 배와 짐을 가득 실은 배 중 부력이 더 크게 작용하는 것은 어느 쪽일까요?", ch:["빈 배","짐을 가득 실은 배","두 배가 같다"], ans:1,
+          wrong:"두 배에서 빨간 선(수면)보다 아래, 물에 잠긴 부분의 크기를 비교해 보세요.",
+          right:"맞아요! 짐을 가득 실은 배는 빈 배보다 물에 더 많이 잠기므로, 잠긴 만큼 부력이 더 크게 작용해요. 무거운 화물선은 물속에 잠기는 부분을 만들어 부력을 조절해요."}
+  };
+  function answered(k){ return !!(PROG.extra & (1<<BIT[k])) || S.ans[k]; }
+  // 목표 잠김 깊이
+  function target(){
+    return {L:34, R:34+30*S.load, E:46, F:118};
+  }
+  function frame(dt){
+    const tg = target();
+    for (const k in tg) S.d[k] += (tg[k]-S.d[k])*Math.min(1, dt*4);
+    S.t += dt; draw();
+  }
+  function txt(s,x,y,size,color,align,weight){
+    ctx.save(); ctx.font=(weight||700)+" "+size+"px 'Noto Sans KR', sans-serif"; ctx.textAlign=align||"center"; ctx.textBaseline="middle";
+    ctx.lineWidth=6; ctx.strokeStyle="rgba(255,255,255,.95)"; ctx.strokeText(s,x,y); ctx.fillStyle=color||"#12324A"; ctx.fillText(s,x,y); ctx.restore();
+  }
+  function dashed(x,y,w,h){ ctx.save(); ctx.setLineDash([10,8]); ctx.strokeStyle="#12324A"; ctx.lineWidth=3; ctx.strokeRect(x,y,w,h); ctx.restore(); }
+  function drawBowl(cx, d, load, side){
+    const wl = 300, w = 230, h = 120, top = wl - (h - d), x = cx - w/2;
+    // 그릇 (노란 상자, 위가 열림)
+    ctx.fillStyle="#FCD34D"; ctx.fillRect(x, top, w, h);
+    ctx.fillStyle="#FDE68A"; ctx.fillRect(x+12, top, w-24, h-12);
+    ctx.strokeStyle="#B45309"; ctx.lineWidth=3; ctx.strokeRect(x, top, w, h);
+    // 짐
+    for (let i=0;i<load;i++){
+      const bw=110, bh=42, bx = cx-bw/2, by = top+h-12-bh*(i+1);
+      ctx.fillStyle="#DC2626"; ctx.fillRect(bx,by,bw,bh); ctx.strokeStyle="#7F1D1D"; ctx.lineWidth=2; ctx.strokeRect(bx,by,bw,bh);
+      ctx.strokeStyle="rgba(255,255,255,.35)"; ctx.beginPath(); ctx.moveTo(bx+8,by+8); ctx.lineTo(bx+bw-8,by+8); ctx.stroke();
+    }
+    dashed(x-6, wl, w+12, d+6);
+    return {top, x, w, h, wl};
+  }
+  function drawShip(cx, d, loaded){
+    const wl = 330, L = 470, hullH = 150, deck = wl - (hullH - d);
+    // 짐(컨테이너)
+    const cols = ["#E11D48","#2563EB","#16A34A","#F59E0B","#7C3AED","#0EA5E9"];
+    if (loaded) for (let r=0;r<3;r++) for (let c=0;c<6;c++){
+      ctx.fillStyle = cols[(r*2+c)%6]; ctx.fillRect(cx-200+c*52, deck-28*(r+1), 48, 25);
+      ctx.strokeStyle="rgba(0,0,0,.25)"; ctx.lineWidth=1.5; ctx.strokeRect(cx-200+c*52, deck-28*(r+1), 48, 25);
+    }
+    // 선실
+    ctx.fillStyle="#F8FAFC"; ctx.fillRect(cx+130, deck-96, 70, 96); ctx.fillStyle="#7DD3FC"; for (let i=0;i<3;i++) ctx.fillRect(cx+138+i*21, deck-84, 14, 12);
+    ctx.fillStyle="#E8473B"; ctx.fillRect(cx+150, deck-128, 22, 32);
+    // 선체
+    ctx.fillStyle="#1E3A8A"; ctx.beginPath(); ctx.moveTo(cx-L/2-30, deck); ctx.lineTo(cx+L/2, deck); ctx.lineTo(cx+L/2-30, deck+hullH); ctx.lineTo(cx-L/2+20, deck+hullH); ctx.closePath(); ctx.fill();
+    ctx.fillStyle="#B91C1C"; ctx.beginPath(); ctx.moveTo(cx-L/2-10, deck+hullH*0.55); ctx.lineTo(cx+L/2-14, deck+hullH*0.55); ctx.lineTo(cx+L/2-30, deck+hullH); ctx.lineTo(cx-L/2+20, deck+hullH); ctx.closePath(); ctx.fill();
+    ctx.fillStyle="#fff"; ctx.fillRect(cx-L/2-22, deck+8, L+10, 6);
+    return {wl, deck, hullH, L};
+  }
+  function water(y0, color){
+    const g = ctx.createLinearGradient(0,y0,0,H); g.addColorStop(0,"rgba(80,170,230,.55)"); g.addColorStop(1,"rgba(20,90,170,.7)");
+    ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(0,H);
+    for (let x=0;x<=W;x+=10) ctx.lineTo(x, y0 + Math.sin(x/40 + S.t*1.6)*3);
+    ctx.lineTo(W,H); ctx.closePath(); ctx.fill();
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const reveal = answered(S.scene) && S.arrows[S.scene]!==false;
+    if (S.scene==="bowl"){
+      ctx.fillStyle="#F1F8FC"; ctx.fillRect(0,0,W,H);
+      // 수조
+      ctx.fillStyle="rgba(255,255,255,.7)"; ctx.fillRect(60,120,W-120,H-150);
+      ctx.save(); ctx.beginPath(); ctx.rect(62,120,W-124,H-152); ctx.clip();
+      const L = drawBowl(340, S.d.L, 0), R = drawBowl(860, S.d.R, S.load);
+      const g = ctx.createLinearGradient(0,300,0,H); g.addColorStop(0,"rgba(80,170,230,.45)"); g.addColorStop(1,"rgba(20,90,170,.55)");
+      ctx.fillStyle=g; ctx.fillRect(60,300,W-120,H-300);
+      ctx.strokeStyle="rgba(20,110,190,.8)"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(60,300); ctx.lineTo(W-60,300); ctx.stroke();
+      dashed(L.x-6, 300, L.w+12, S.d.L+6); dashed(R.x-6, 300, R.w+12, S.d.R+6);
+      ctx.restore();
+      ctx.strokeStyle="#64748B"; ctx.lineWidth=5; ctx.strokeRect(60,120,W-120,H-150);
+      txt("물속에 잠긴 부피가 "+(S.load===0?"같다":"작다"), 340, 300+S.d.L+48, 28, "#0F172A");
+      txt("물속에 잠긴 부피가 "+(S.load===0?"같다":"크다"), 860, 300+S.d.R+48, 28, "#0F172A");
+      txt("빈 그릇", 340, 70, 32, "#B45309", "center", 900);
+      txt("짐 "+S.load+"개를 올린 그릇", 860, 70, 32, "#B91C1C", "center", 900);
+      if (reveal){
+        [[340,S.d.L],[860,S.d.R]].forEach(([x,d])=>{
+          const y0 = 300 + d/2, L = 30 + d*1.15;
+          arrow(ctx, x, y0, x, y0-L, "#E8473B", 12); txt("부력", x+56, y0-L+14, 30, "#C2281E");
+        });
+      }
+    } else {
+      const sky = ctx.createLinearGradient(0,0,0,330); sky.addColorStop(0,"#BFE8FB"); sky.addColorStop(1,"#EFF9FE");
+      ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
+      cloud(ctx,80,70,1.1); cloud(ctx,980,60,1);
+      ctx.save(); ctx.beginPath(); ctx.rect(0,0,W/2-6,H); ctx.clip(); const A = drawShip(300, S.d.E, false); ctx.restore();
+      ctx.save(); ctx.beginPath(); ctx.rect(W/2+6,0,W/2,H); ctx.clip(); const B = drawShip(900, S.d.F, true); ctx.restore();
+      water(330);
+      ctx.strokeStyle="rgba(255,255,255,.9)"; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(0,330); ctx.lineTo(W,330); ctx.stroke();
+      ctx.fillStyle="rgba(255,255,255,.8)"; ctx.fillRect(W/2-3,0,6,H);
+      // 잠긴 부분 점선
+      dashed(300-A.L/2-20, 330, A.L+10, S.d.E+4); dashed(900-B.L/2-20, 330, B.L+10, S.d.F+4);
+      txt("빈 배", 300, 40, 34, "#1E3A8A", "center", 900); txt("짐을 가득 실은 배", 900, 40, 34, "#B91C1C", "center", 900);
+      txt("물속에 잠긴 부피가 작다", 300, 330+S.d.E+46, 28, "#0B2545"); txt("물속에 잠긴 부피가 크다", 900, 330+S.d.F+46, 28, "#0B2545");
+      if (reveal){
+        [[300,S.d.E],[900,S.d.F]].forEach(([x,d])=>{
+          const y0 = 330 + d/2, L = 30 + d*1.1;
+          arrow(ctx, x-60, y0, x-60, y0-L, "#E8473B", 12); txt("부력", x-4, y0-L+14, 30, "#C2281E");
+        });
+      }
+    }
+  }
+  function render(){
+    $$("#figSeg button").forEach(b=>b.classList.toggle("on", b.dataset.f===S.scene));
+    const box = $("#figQ"); box.innerHTML = "";
+    const Q = QD[S.scene], done = answered(S.scene), wr = S.wrong[S.scene]||[];
+    box.append(el("div",{class:"fig-q",text:"❓ "+Q.q}));
+    const ch = el("div",{class:"choices"});
+    Q.ch.forEach((t,k)=> ch.append(el("button",{class: done && k===Q.ans ? "right" : (wr.includes(k)?"wrong":""), disabled: done, onclick:()=>{
+      if (k===Q.ans){ S.ans[S.scene] = true; PROG.extra |= (1<<BIT[S.scene]); saveProgress(); }
+      else (S.wrong[S.scene] = S.wrong[S.scene]||[]).push(k);
+      render();
+    }}, t)));
+    box.append(ch);
+    if (!done && wr.length) box.append(el("div",{class:"notice bad fb",text:Q.wrong}));
+    if (done){
+      box.append(el("div",{class:"notice ok fb",text:Q.right}));
+      const acts = el("div",{class:"dir-actions"});
+      acts.append(el("button",{class:"btn ghost",onclick:()=>{ S.arrows[S.scene] = S.arrows[S.scene]===false; render(); }}, S.arrows[S.scene]===false ? "➡️ 부력 화살표 보기" : "➡️ 부력 화살표 숨기기"));
+      if (S.scene==="bowl"){
+        acts.append(el("button",{class:"btn amber",disabled:S.load>=3,onclick:()=>{ S.load++; render(); }},"🧱 짐 올리기"),
+                    el("button",{class:"btn ghost",disabled:S.load<=0,onclick:()=>{ S.load--; render(); }},"짐 내리기"));
+        acts.append(el("span",{class:"hint-s",style:"align-self:center",text:"짐을 올리고 내리면서 잠긴 부피와 부력 화살표가 어떻게 변하는지 보세요."}));
+      } else acts.append(el("button",{class:"btn",onclick:()=>{ $$("#figSeg button")[0].click(); }},"🥣 그릇 그림 보기"));
+      if (answered("bowl") && answered("ship")) acts.append(el("button",{class:"btn green",onclick:()=>$('#measNav button[data-s="quiz"]').click()},"③ 퀴즈 풀러 가기 ▶"));
+      box.append(acts);
+      if (S.scene==="ship" || (answered("bowl") && answered("ship")))
+        box.append(el("div",{class:"notice info",style:"margin-top:10px;font-size:19px"},"📌 물속에 잠긴 물체의 부피가 클수록 부력의 크기가 커진다. 짐을 가득 실은 배는 빈 배보다 물에 더 많이 잠기므로 잠긴 만큼 부력이 더 크게 작용한다."));
+    } else if (S.scene==="bowl" && S.load!==2){ S.load = 2; }
+  }
+  $$("#figSeg button").forEach(b=>b.addEventListener("click", ()=>{ S.scene = b.dataset.f; render(); }));
+  const t0 = target(); Object.assign(S.d, t0);
+  return {frame, render, reset(){ S.ans={}; S.wrong={}; S.arrows={}; S.load=2; S.scene="bowl"; }};
+})();
+
+/* ---------- ③ 어느 쪽 부력이 클까? 퀴즈 ---------- */
+const QZ = (function(){
+  const W=1000, H=420;
+  const cv = $("#qzCv"); const ctx = setupCanvas(cv, W, H);
+  let idx = 0; const local = {};       // 미리보기 등에서 쓰는 임시 답
+  const ABS = ["A가 더 크다","B가 더 크다","A와 B가 같다"];
+  // b: [A부력, B부력] 화살표 길이 비
+  const ITEMS = [
+    {title:"잠긴 추의 개수", q:"같은 추 3개를 매달았어요. A는 추 1개, B는 추 3개가 물에 잠겼어요. 부력이 더 큰 쪽은?", ans:1, b:[0.33,1],
+     exp:"B는 물속에 잠긴 추의 부피가 더 커요. 물속에 잠긴 부피가 클수록 부력의 크기가 커져요.", draw:(o,s)=>scaleStack(o, s==="A"?1:3)},
+    {title:"모양만 다른 찰흙", q:"같은 양의 찰흙을 A는 공 모양, B는 납작한 판 모양으로 만들어 물속에 완전히 잠기게 했어요. 부력이 더 큰 쪽은?", ans:2, b:[1,1],
+     exp:"모양이 달라도 찰흙의 양(부피)이 같고 둘 다 완전히 잠겼으니 잠긴 부피가 같아요. 부력은 물에 닿는 면적이 아니라 잠긴 부피에 따라 달라져요.", draw:(o,s)=> s==="A" ? hungBall(o, 52, "#B45309", 280) : hungPlate(o, 150, 40, "#B45309", 280)},
+    {title:"물속에 누른 공", q:"큰 비치볼(A)과 작은 공(B)을 손으로 눌러 물속에 완전히 잠기게 했어요. 부력이 더 큰 쪽은?", ans:0, b:[1,0.3],
+     exp:"큰 비치볼이 물속에 잠긴 부피가 훨씬 커요. 그래서 큰 공을 물속에 누르기가 훨씬 힘들어요.", draw:(o,s)=> pushedBall(o, s==="A"?72:30)},
+    {title:"빈 배와 짐 실은 배", q:"똑같은 배예요. A는 빈 배, B는 짐을 가득 실은 배예요. 부력이 더 큰 쪽은?", ans:1, b:[0.4,1],
+     exp:"짐을 가득 실은 배는 빈 배보다 물에 더 많이 잠기므로 잠긴 만큼 부력이 더 크게 작용해요.", draw:(o,s)=> miniShip(o, s==="B")},
+    {title:"쇠구슬과 유리구슬", q:"크기(부피)가 같은 쇠구슬(A)과 유리구슬(B)을 실에 매달아 물속에 완전히 잠기게 했어요. 부력이 더 큰 쪽은?", ans:2, b:[1,1],
+     exp:"쇠구슬이 더 무겁지만, 부력은 물체의 무게가 아니라 물속에 잠긴 부피에 따라 달라져요. 잠긴 부피가 같으니 부력도 같아요.", draw:(o,s)=> hungBall(o, 46, s==="A"?"#64748B":"#A5F3FC", 280, s==="A"?"쇠구슬":"유리구슬")},
+    {title:"반쯤 잠김과 다 잠김", q:"같은 공이에요. A는 반쯤 잠겼고, B는 완전히 잠겼어요. 부력이 더 큰 쪽은?", ans:1, b:[0.5,1],
+     exp:"B가 물속에 잠긴 부피가 더 커요. 물체가 물에 더 많이 잠길수록 부력이 커져요.", draw:(o,s)=> hungBall(o, 56, "#F97316", s==="A"?178:260)},
+    {title:"세운 막대와 눕힌 막대", q:"같은 막대를 A는 세워서, B는 눕혀서 물속에 완전히 잠기게 했어요. 부력이 더 큰 쪽은?", ans:2, b:[1,1],
+     exp:"세우든 눕히든 같은 막대가 완전히 잠기면 잠긴 부피가 같아요. 그래서 부력도 같아요.", draw:(o,s)=> s==="A" ? hungPlate(o, 34, 130, "#7C3AED", 260) : hungPlate(o, 130, 34, "#7C3AED", 300)},
+    {title:"용수철저울 값 비교", q:"공기 중 무게가 5.0 N인 두 물체를 물에 담갔더니, 물속에서 A는 3.0 N, B는 4.0 N이었어요. 부력이 더 큰 쪽은?", ans:0, b:[1,0.5],
+     exp:"부력의 크기 = 공기 중 무게 − 물속 무게. A는 5.0 − 3.0 = 2.0 N, B는 5.0 − 4.0 = 1.0 N이므로 A의 부력이 더 커요.", draw:(o,s)=> scaleRead(o, s==="A"?"3.0":"4.0", s==="A"?1:0.5)},
+    {title:"얕은 곳과 깊은 곳", q:"같은 물체를 A는 얕은 곳에, B는 깊은 곳에 완전히 잠기게 했어요. 부력이 더 큰 쪽은?", ans:2, b:[1,1],
+     exp:"둘 다 완전히 잠겼으니 물속에 잠긴 부피가 같아요. 그래서 부력의 크기도 같아요.", draw:(o,s)=> hungBall(o, 44, "#16A34A", s==="A"?250:340)},
+    {title:"부력의 크기 계산", q:"공기 중에서 무게가 8 N인 물체를 물속에서 측정했더니 4 N이었어요. 이 물체에 작용하는 부력의 크기는?", ans:1, ch:["2 N","4 N","12 N"], b:null, single:true,
+     exp:"부력의 크기 = 공기 중에서 측정한 무게 − 물속에서 측정한 무게 = 8 N − 4 N = 4 N", draw:null}
+  ];
+  const N = ITEMS.length;
+  function doneQ(i){ return MODE==="student" ? !!(PROG.qdone & (1<<i)) : (i in local); }
+  function okQ(i){ return MODE==="student" ? !!(PROG.qok & (1<<i)) : local[i]===ITEMS[i].ans; }
+  function picked(i){ return local[i]; }
+
+  /* --- 그리기 도구 (o: 패널 왼쪽 x) --- */
+  const WL = 150;
+  function tank(o, wl){
+    wl = wl || WL;
+    ctx.fillStyle="rgba(255,255,255,.75)"; ctx.fillRect(o+40,80,400,310);
+    const g = ctx.createLinearGradient(0,wl,0,390); g.addColorStop(0,"rgba(85,180,235,.45)"); g.addColorStop(1,"rgba(30,120,200,.55)");
+    ctx.fillStyle=g; ctx.fillRect(o+40,wl,400,390-wl);
+    ctx.strokeStyle="rgba(20,110,190,.7)"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(o+40,wl); ctx.lineTo(o+440,wl); ctx.stroke();
+    ctx.strokeStyle="#64748B"; ctx.lineWidth=4; ctx.strokeRect(o+40,80,400,310);
+  }
+  function thread(x,y){ ctx.strokeStyle="#475569"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x,20); ctx.lineTo(x,y); ctx.stroke(); }
+  function hungBall(o, r, color, cy, name){
+    tank(o); const x=o+240; thread(x, cy-r);
+    const g = ctx.createRadialGradient(x-r*.35,cy-r*.35,r*.1,x,cy,r); g.addColorStop(0,"#fff"); g.addColorStop(.3,color); g.addColorStop(1,shade(color));
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,cy,r,0,7); ctx.fill();
+    if (name) label(ctx,name,x+r+10,cy,"#334155",20);
+    ctx.save(); ctx.beginPath(); ctx.rect(o+40,WL,400,240); ctx.clip();
+    ctx.fillStyle="rgba(60,150,220,.25)"; ctx.beginPath(); ctx.arc(x,cy,r,0,7); ctx.fill(); ctx.restore();
+    return {x, y:cy};
+  }
+  function hungPlate(o, w, h, color, cy){
+    tank(o); const x=o+240; thread(x, cy-h/2);
+    ctx.fillStyle=color; ctx.fillRect(x-w/2, cy-h/2, w, h); ctx.strokeStyle=shade(color); ctx.lineWidth=2; ctx.strokeRect(x-w/2,cy-h/2,w,h);
+    return {x, y:cy};
+  }
+  function pushedBall(o, r){
+    tank(o); const x=o+240, cy=WL+20+r+30;
+    const segs=["#E8473B","#FFFFFF","#2F8FD8","#FFFFFF","#FFC83D","#FFFFFF"];
+    for (let i=0;i<6;i++){ ctx.fillStyle=segs[i]; ctx.beginPath(); ctx.moveTo(x,cy); ctx.arc(x,cy,r,i*Math.PI/3,(i+1)*Math.PI/3); ctx.closePath(); ctx.fill(); }
+    // 손
+    ctx.fillStyle="#F2C9A0"; ctx.strokeStyle="#C99872"; ctx.lineWidth=2;
+    ctx.fillRect(x-14, 10, 28, cy-r-30); ctx.strokeRect(x-14,10,28,cy-r-30);
+    ctx.beginPath(); ctx.ellipse(x, cy-r-14, 28, 16, 0, 0, 7); ctx.fill(); ctx.stroke();
+    return {x, y:cy};
+  }
+  function miniShip(o, loaded){
+    const wl=200, d = loaded? 62 : 26, x=o+240, deck = wl-(80-d), L=300;
+    ctx.fillStyle="#E0F2FE"; ctx.fillRect(o+10,10,460,wl-10);
+    if (loaded) for (let r=0;r<2;r++) for (let c=0;c<5;c++){ ctx.fillStyle=["#E11D48","#2563EB","#16A34A","#F59E0B","#7C3AED"][(r+c)%5]; ctx.fillRect(x-130+c*42, deck-22*(r+1), 39, 20); }
+    ctx.fillStyle="#F8FAFC"; ctx.fillRect(x+80, deck-58, 46, 58);
+    ctx.fillStyle="#1E3A8A"; ctx.beginPath(); ctx.moveTo(x-L/2-16,deck); ctx.lineTo(x+L/2,deck); ctx.lineTo(x+L/2-20,deck+80); ctx.lineTo(x-L/2+12,deck+80); ctx.closePath(); ctx.fill();
+    const g = ctx.createLinearGradient(0,wl,0,H); g.addColorStop(0,"rgba(80,170,230,.6)"); g.addColorStop(1,"rgba(20,90,170,.75)");
+    ctx.fillStyle=g; ctx.fillRect(o+10,wl,460,H-wl-10);
+    ctx.save(); ctx.setLineDash([8,6]); ctx.strokeStyle="#fff"; ctx.lineWidth=2.5; ctx.strokeRect(x-L/2-10, wl, L+8, d); ctx.restore();
+    return {x, y: wl + d/2};
+  }
+  function scaleStack(o, nSub){
+    const wl = 250; tank(o, wl); const x=o+240;
+    const topFirst = 3 - nSub;                       // 공기 중에 있는 추 수
+    const y0 = wl - 6 - topFirst*44;                 // 맨 위 추의 위치
+    thread(x, y0-96);
+    ctx.fillStyle="#F59E0B"; ctx.fillRect(x-20,y0-96,40,66);
+    ctx.strokeStyle="#475569"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x,y0-30); ctx.lineTo(x,y0+2*44+(topFirst<3?12:0)); ctx.stroke();
+    const tops = [];
+    for (let i=0;i<3;i++){ const t = y0 + i*44 + (i>=topFirst? 12:0); tops.push(t);
+      const gr = ctx.createLinearGradient(x-20,0,x+20,0); gr.addColorStop(0,"#A16207"); gr.addColorStop(.45,"#FACC15"); gr.addColorStop(1,"#92400E");
+      ctx.fillStyle=gr; ctx.fillRect(x-20,t,40,32); }
+    const sub = tops.slice(topFirst);
+    return {x, y: (sub[0] + sub[sub.length-1] + 32)/2};
+  }
+  function scaleRead(o, val, frac){
+    tank(o); const x=o+240; thread(x, 30);
+    ctx.fillStyle="#F59E0B"; ctx.fillRect(x-28,30,56,96);
+    ctx.fillStyle="#1F2937"; ctx.fillRect(x-22,44,44,40); ctx.fillStyle="#B5F5C9"; ctx.fillRect(x-19,47,38,34);
+    ctx.fillStyle="#0F3D24"; ctx.font="900 18px 'Noto Sans KR'"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(val,x,64);
+    ctx.strokeStyle="#475569"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x,126); ctx.lineTo(x,230); ctx.stroke();
+    ctx.fillStyle="#0EA5E9"; ctx.fillRect(x-44,230,88,70);
+    label(ctx,"공기 중 5.0 N",o+60,120,"#334155",19);
+    label(ctx,"물속 "+val+" N",x+40,64,"#B91C1C",21);
+    return {x, y:265};
+  }
+  function shade(hex){ const n = parseInt(hex.slice(1),16); const r=(n>>16)*0.6, g=((n>>8)&255)*0.6, b=(n&255)*0.6; return "rgb("+r+","+g+","+b+")"; }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const it = ITEMS[idx];
+    if (it.single){
+      ctx.fillStyle="#F8FBFD"; ctx.fillRect(0,0,W,H);
+      // 교과서 169쪽 같은 계산 그림
+      [["공기 중에서 측정한 무게","8 N",230,false],["물속에서 측정한 무게","4 N",770,true]].forEach(([t,v,x,inW])=>{
+        ctx.strokeStyle="#475569"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x,20); ctx.lineTo(x,40); ctx.stroke();
+        ctx.fillStyle="#F59E0B"; ctx.fillRect(x-34,40,68,110); ctx.fillStyle="#1F2937"; ctx.fillRect(x-26,56,52,44); ctx.fillStyle="#B5F5C9"; ctx.fillRect(x-23,59,46,38);
+        ctx.fillStyle="#0F3D24"; ctx.font="900 24px 'Noto Sans KR'"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(v,x,78);
+        ctx.strokeStyle="#475569"; ctx.beginPath(); ctx.moveTo(x,150); ctx.lineTo(x,230); ctx.stroke();
+        ctx.fillStyle="#CA8A04"; ctx.fillRect(x-30,230,60,50);
+        if (inW){ ctx.fillStyle="rgba(85,180,235,.45)"; ctx.fillRect(x-110,200,220,150); ctx.strokeStyle="#64748B"; ctx.lineWidth=4; ctx.strokeRect(x-110,170,220,180); }
+        label(ctx,t,x,385,"#12324A",24,"center");
+      });
+      label(ctx,"−",500,240,"#12324A",60,"center");
+      label(ctx,"부력의 크기 = ?",500,50,"#C2281E",30,"center");
+      return;
+    }
+    ctx.fillStyle="#F8FBFD"; ctx.fillRect(0,0,W,H);
+    const pA = it.draw(10,"A"), pB = it.draw(510,"B");
+    ctx.fillStyle="rgba(255,255,255,1)"; ctx.fillRect(496,0,8,H);
+    [["A",30],["B",530]].forEach(([t,x])=>{ ctx.fillStyle="#12324A"; ctx.beginPath(); ctx.arc(x+22,32,24,0,7); ctx.fill(); label(ctx,t,x+22,33,"#fff",28,"center"); });
+    if (doneQ(idx) && it.b){
+      [[pA,it.b[0]],[pB,it.b[1]]].forEach(([p,k])=>{ arrow(ctx,p.x+(it.title==="용수철저울 값 비교"?60:0),p.y,p.x+(it.title==="용수철저울 값 비교"?60:0),p.y-30-90*k,"#E8473B",9); label(ctx,"부력",p.x+14+(it.title==="용수철저울 값 비교"?60:0),p.y-40-90*k,"#C2281E",22); });
+    }
+  }
+  function render(){
+    const nav = $("#qzNav"); nav.innerHTML = "";
+    ITEMS.forEach((it,i)=> nav.append(el("button",{class:(i===idx?"on ":"")+(doneQ(i)?(okQ(i)?"done":"miss"):""), title:it.title, onclick:()=>{ idx=i; render(); }}, doneQ(i)? (okQ(i)?"✓":"✗") : String(i+1))));
+    const nd = ITEMS.filter((x,i)=>doneQ(i)).length, nok = ITEMS.filter((x,i)=>okQ(i)).length;
+    nav.append(el("span",{class:"chip",style:"margin-left:auto;align-self:center"}, "맞힌 문제 "+nok+" / "+N));
+    const it = ITEMS[idx], box = $("#qzBox"); box.innerHTML = "";
+    box.append(el("div",{class:"hint-s",text:"문제 "+(idx+1)+" / "+N+" · "+it.title}), el("div",{class:"fig-q",text:it.q}));
+    const chs = it.ch || ABS, done = doneQ(idx), ch = el("div",{class:"choices"});
+    const my = picked(idx);
+    chs.forEach((t,k)=> ch.append(el("button",{class: done ? (k===it.ans?"right":(k===my?"wrong":"")) : "", disabled:done, onclick:()=>answer(k)}, t)));
+    box.append(ch);
+    if (done){
+      const ok = okQ(idx);
+      box.append(el("div",{class:"notice "+(ok?"ok":"bad")+" fb"}, el("b",{text: ok? "🎉 정답이에요! " : "😮 정답은 ‘"+chs[it.ans]+"’예요. "}), it.exp));
+      const acts = el("div",{class:"dir-actions"});
+      if (idx<N-1) acts.append(el("button",{class:"btn",onclick:()=>{ idx++; render(); }},"다음 문제 ▶"));
+      box.append(acts);
+    }
+    if (nd===N){
+      box.append(el("div",{class:"notice info",style:"margin-top:12px;font-size:20px"},
+        el("b",{text:"🏁 퀴즈 끝! "+N+"문제 중 "+nok+"문제를 맞혔어요. "}),
+        "기억하기: 부력의 크기는 물체의 무게나 모양이 아니라 ‘물속에 잠긴 부피’에 따라 달라져요. 잠긴 부피가 클수록 부력이 커져요."));
+    }
+    draw();
+  }
+  function answer(k){
+    if (doneQ(idx)) return;
+    local[idx] = k;
+    if (MODE==="student"){
+      PROG.qdone |= (1<<idx); if (k===ITEMS[idx].ans) PROG.qok |= (1<<idx);
+      store.set("buoy_qpick_"+(ME?ME.sid:""), local);
+      saveProgress();
+    }
+    render();
+  }
+  return {
+    render(){ if (MODE==="student" && ME){ const c = store.get("buoy_qpick_"+ME.sid); if (c) Object.assign(local, c); } render(); },
+    reset(){ for (const k in local) delete local[k]; idx = 0; },
+    sync(){ if (TAB==="meas" && !$("#ms-quiz").classList.contains("hidden")) render(); }
+  };
+})();
+
+/* =====================================================================
+   📝 담벼락
+   ===================================================================== */
+let wallBusy = false, wallTimer = null;
+async function loadWall(force){
+  if (force) $("#wallBody").dataset.sig = "";
+  if (wallBusy) return; wallBusy = true;
+  const body = $("#wallBody");
+  try{
+    if (MODE==="preview"){
+      const r = await rpc("buoy_t_posts",{p_pw:TPW});
+      if (r.ok) renderWall(r.posts, false, true);
+      $("#postBtn").classList.add("hidden"); $("#myCount").classList.add("hidden");
+    } else if (MODE==="public"){
+      const r = await rpc("buoy_public_posts",{});
+      $("#postBtn").classList.add("hidden"); $("#myCount").classList.add("hidden");
+      if (!r.ok){ leavePublic(); toast("선생님이 ‘로그인 없이 보기’를 닫았어요."); return; }
+      renderWall(r.posts, false, false, true);
+    } else {
+      const r = await rpc("buoy_wall",{p_sid:ME.sid,p_token:ME.token});
+      if (!r.ok){ if (r.err==="closed"){ OPEN.wall=false; OPEN.pub=false; applyLocks(); } return; }
+      $("#postBtn").classList.toggle("hidden", !r.can_post); $("#myCount").classList.toggle("hidden", !r.can_post);
+      $("#myCount").textContent = "내 사례 "+r.mine+"/4";
+      $("#postBtn").disabled = r.mine>=4;
+      renderWall(r.posts, r.locked, false);
+    }
+  }catch(e){ if (!body.childElementCount) body.append(el("div",{class:"notice bad",text:NETERR})); }
+  finally{ wallBusy = false; }
+  clearTimeout(wallTimer);
+  wallTimer = setTimeout(()=>{ if (TAB==="wall" && isOpen("wall") && !$("#app").classList.contains("hidden")) loadWall(); }, 15000);
+}
+function postCard(p, opts){
+  const who = el("div",{class:"who"}, el("span",{text:(p.cls%100)+"반 · "+p.nickname}));
+  if (opts.sid) who.append(el("span",{class:"sid",text:p.sid}));
+  if (opts.mine && p.mine) who.append(el("span",{text:"⭐ 내 글"}), el("button",{class:"btn ghost small del",onclick:async()=>{
+    if (!confirm("이 글을 지울까요?")) return;
+    try{ await rpc("buoy_delete_my_post",{p_sid:ME.sid,p_token:ME.token,p_id:p.id}); loadWall(true); }catch(e){ toast(NETERR); }
+  }},"🗑 지우기"));
+  if (opts.onDel) who.append(el("button",{class:"btn red small del",onclick:()=>opts.onDel(p)},"🗑 삭제"));
+  return el("div",{class:"post "+p.kind+(p.mine&&opts.mine?" mine":"")}, p.photo ? photoBox(p, opts.big) : null, el("h5",{text:(p.kind==="liquid"?"💧 ":"🎈 ")+p.title}), el("p",{text:p.body}), who);
+}
+function wallColumns(posts, opts){
+  const cols = el("div",{class:"wall-cols"});
+  [["liquid","💧 액체(물)에서 작용하는 부력"],["gas","🎈 기체(공기)에서 작용하는 부력"]].forEach(([k,t])=>{
+    const list = posts.filter(p=>p.kind===k);
+    const c = el("div",{}, el("div",{class:"col-h "+k}, t, el("span",{class:"n",text:list.length+"개"})));
+    if (!list.length) c.append(el("div",{class:"empty",text:"아직 사례가 없어요."}));
+    list.forEach(p=>c.append(postCard(p, opts)));
+    cols.append(c);
+  });
+  return cols;
+}
+let wallCls = "all";
+function renderWall(posts, locked, preview, pub, force){
+  const body = $("#wallBody");
+  const sig = JSON.stringify([locked,preview,pub,wallCls,MODE,OPEN.wall,posts.map(p=>[p.id||p.created_at,p.title,p.body,p.mine])]);
+  if (!force && body.dataset.sig===sig && body.childElementCount) return;
+  body.dataset.sig = sig; body.innerHTML = "";
+  if (pub) body.append(el("div",{class:"notice warn",style:"margin-bottom:12px"},"👀 로그인 없이 보는 중이에요. 사례를 올리려면 ‘← 입장 화면으로’를 눌러 학번과 닉네임으로 입장하세요."));
+  else if (!preview && MODE==="student" && !OPEN.wall && OPEN.pub) body.append(el("div",{class:"notice warn",style:"margin-bottom:12px"},"👀 지금은 보기만 할 수 있어요. 선생님이 담벼락을 열면 사례를 올릴 수 있어요."));
+  if (locked){
+    body.append(el("div",{class:"card lockbox"}, el("div",{class:"big"},"🫧"), el("h2",{text:"먼저 내 사례를 1개 올려 보세요!"}),
+      el("p",{text:"내 사례를 올리면 1~"+CFG.CLASS_COUNT+"반 친구들이 올린 사례를 모두 볼 수 있어요."})));
+    return;
+  }
+  const sel = el("div",{class:"seg",style:"margin-bottom:12px;flex-wrap:wrap"});
+  const opts = [["all","전체 반"]]; for (let c=1;c<=CFG.CLASS_COUNT;c++) opts.push([String(c), c+"반"]);
+  opts.forEach(([v,t])=> sel.append(el("button",{class:wallCls===v?"on":"",style:"flex:0 0 auto;padding:8px 14px",onclick:()=>{ wallCls=v; renderWall(posts, locked, preview, pub, true); }}, t)));
+  const shown = wallCls==="all" ? posts : posts.filter(p=>(p.cls%100)===+wallCls);
+  body.append(sel, wallColumns(shown, {mine:!preview && !pub, big:preview}));
+  if (preview) body.classList.add("big-wall"); else body.classList.remove("big-wall");
+}
+/* ---------- 사진: 구글 드라이브(Apps Script)에 저장·불러오기 ---------- */
+const PHOTO = (function(){
+  const cache = new Map(), waiting = new Map(), queue = [];
+  let running = 0;
+  const URL_ = ()=> (CFG.APPS_SCRIPT_URL||"").trim();
+  function pump(){
+    while (running < 3 && queue.length){
+      const id = queue.shift(); running++;
+      fetch(URL_()+"?id="+encodeURIComponent(id)).then(r=>r.json()).then(j=>{
+        if (!j.ok) throw new Error("none");
+        return new Promise((res,rej)=>{ const im = new Image(); im.onload=()=>res(im); im.onerror=rej; im.src = "data:"+(j.type||"image/jpeg")+";base64,"+j.data; });
+      }).then(im=>{ cache.set(id, im); (waiting.get(id)||[]).forEach(w=>w[0](im)); })
+        .catch(e=>{ (waiting.get(id)||[]).forEach(w=>w[1](e)); })
+        .finally(()=>{ waiting.delete(id); running--; pump(); });
+    }
+  }
+  function get(id){
+    if (cache.has(id)) return Promise.resolve(cache.get(id));
+    if (!URL_()) return Promise.reject(new Error("noconfig"));
+    return new Promise((res,rej)=>{
+      if (!waiting.has(id)){ waiting.set(id, []); queue.push(id); }
+      waiting.get(id).push([res,rej]); pump();
+    });
+  }
+  async function upload(b64){
+    if (!URL_()) throw new Error("noapps");
+    const r = await fetch(URL_(), {method:"POST", body: JSON.stringify({action:"upload", sid:ME.sid, token:ME.token, data:b64})});
+    return r.json();
+  }
+  async function cleanup(pw){
+    if (!URL_()) return {ok:false, err:"noapps"};
+    const r = await fetch(URL_(), {method:"POST", body: JSON.stringify({action:"cleanup", pw})});
+    return r.json();
+  }
+  // 사진 + 부력 화살표 그리기
+  function paint(canvas, im, a){
+    const w = im.naturalWidth, h = im.naturalHeight;
+    canvas.width = w; canvas.height = h;
+    const c = canvas.getContext("2d"); c.drawImage(im,0,0);
+    if (a){
+      const s = Math.max(w,h);
+      arrow(c, a.x1*w, a.y1*h, a.x2*w, a.y2*h, "#E8473B", Math.max(6, s/90));
+      c.fillStyle="#E8473B"; c.beginPath(); c.arc(a.x1*w, a.y1*h, Math.max(5, s/120), 0, 7); c.fill();
+      const fs = Math.max(18, Math.round(s/26));
+      label(c, "부력", a.x2*w + fs*0.5, a.y2*h + fs*0.4, "#C2281E", fs);
+    }
+  }
+  return {get, upload, cleanup, paint, cached:id=>cache.get(id)};
+})();
+
+function photoBox(p, big){
+  const wrap = el("div",{class:"ph"+(big?" big":"")});
+  const cv = el("canvas",{"aria-label":"사례 사진과 부력 화살표"});
+  wrap.append(cv);
+  const im = PHOTO.cached(p.photo);
+  if (im){ PHOTO.paint(cv, im, p.arrow); }
+  else {
+    wrap.classList.add("loading");
+    const io = new IntersectionObserver((ents)=>{
+      if (!ents.some(e=>e.isIntersecting)) return;
+      io.disconnect();
+      PHOTO.get(p.photo).then(im=>{ wrap.classList.remove("loading"); PHOTO.paint(cv, im, p.arrow); })
+        .catch(()=>{ wrap.classList.remove("loading"); wrap.classList.add("fail"); wrap.textContent = "사진을 불러오지 못했어요"; });
+    }, {rootMargin:"300px"});
+    setTimeout(()=>io.observe(wrap), 0);
+  }
+  wrap.addEventListener("click", ()=>{
+    const i2 = PHOTO.cached(p.photo); if (!i2) return;
+    const c2 = el("canvas",{style:"width:100%;height:auto;border-radius:14px"}); PHOTO.paint(c2, i2, p.arrow);
+    const m = modal(el("h3",{text:(p.kind==="liquid"?"💧 ":"🎈 ")+p.title}), c2, el("p",{style:"font-size:20px;white-space:pre-wrap",text:p.body}),
+      el("div",{class:"acts"}, el("button",{class:"btn",onclick:()=>m.close()},"닫기")));
+    m.querySelector(".box").style.maxWidth = "900px";
+  });
+  return wrap;
+}
+
+/* ---------- 사례 올리기 (사진 + 부력 화살표) ---------- */
+$("#postBtn").addEventListener("click", ()=>{
+  const title = el("input",{type:"text",maxlength:"30",placeholder:"예) 구명조끼"});
+  const desc = el("textarea",{maxlength:"200",placeholder:"부력이 어떻게 이용되는지 써요.\n예) 구명조끼 속 공기 때문에 물에 잠긴 부피가 커져서 부력을 크게 받아 물에 쉽게 뜬다."});
+  const cnt1 = el("div",{class:"count",text:"0/30"}), cnt2 = el("div",{class:"count",text:"0/200"});
+  title.addEventListener("input", ()=>cnt1.textContent=title.value.length+"/30");
+  desc.addEventListener("input", ()=>cnt2.textContent=desc.value.length+"/200");
+  let kind = null;
+  const lab1 = el("label",{}, el("input",{type:"radio",name:"kind",value:"liquid"}), "💧 액체(물)에서");
+  const lab2 = el("label",{}, el("input",{type:"radio",name:"kind",value:"gas"}), "🎈 기체(공기)에서");
+  [lab1,lab2].forEach(l=> l.querySelector("input").addEventListener("change", e=>{ kind = e.target.value; lab1.classList.toggle("on", kind==="liquid"); lab2.classList.toggle("on", kind==="gas"); }));
+
+  // 사진 고르기 + 화살표
+  let img = null, b64 = null, arr = null, drawing = null;
+  const file = el("input",{type:"file",accept:"image/*",style:"display:none"});
+  const pickBtn = el("button",{class:"btn amber",style:"width:100%;font-size:21px",onclick:()=>file.click()},"📷 사진 고르기");
+  const pcv = el("canvas",{class:"pick-cv hidden"});
+  const phint = el("div",{class:"hint-s",text:"사진첩에서 사진을 골라요. 사람 얼굴이나 이름, 학교 이름이 보이는 사진은 올리지 마세요."});
+  const redo = el("button",{class:"btn ghost small hidden",onclick:()=>{ arr=null; repaint(); }},"↺ 화살표 다시 그리기");
+  function repaint(){
+    if (!img) return;
+    const c = pcv.getContext("2d"); c.drawImage(img,0,0,pcv.width,pcv.height);
+    const a = drawing || arr;
+    if (a){ const s=Math.max(pcv.width,pcv.height); arrow(c, a.x1*pcv.width, a.y1*pcv.height, a.x2*pcv.width, a.y2*pcv.height, "#E8473B", Math.max(6,s/90));
+      label(c,"부력", a.x2*pcv.width+12, a.y2*pcv.height+10, "#C2281E", Math.max(18,Math.round(s/26))); }
+    phint.textContent = arr ? "✅ 화살표를 그렸어요. 다시 그리려면 사진 위에서 다시 끌어요." : "✍️ 사진 속 물체에서부터 손가락으로 쭉 끌어 부력 화살표를 그려요.";
+    redo.classList.toggle("hidden", !arr);
+  }
+  function pt(e){ const r = pcv.getBoundingClientRect(); return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)), y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))}; }
+  pcv.addEventListener("pointerdown", e=>{ if (!img) return; e.preventDefault(); pcv.setPointerCapture(e.pointerId); const p=pt(e); drawing={x1:p.x,y1:p.y,x2:p.x,y2:p.y}; repaint(); });
+  pcv.addEventListener("pointermove", e=>{ if (!drawing) return; const p=pt(e); drawing.x2=p.x; drawing.y2=p.y; repaint(); });
+  pcv.addEventListener("pointerup", ()=>{ if (!drawing) return; const a=drawing; drawing=null;
+    if (Math.hypot((a.x2-a.x1)*pcv.width,(a.y2-a.y1)*pcv.height) < Math.max(pcv.width,pcv.height)*0.06){ toast("조금 더 길게 쭉 끌어서 그려 보세요."); repaint(); return; }
+    arr = a; repaint(); });
+  file.addEventListener("change", ()=>{
+    const f = file.files && file.files[0]; if (!f) return;
+    if (!/^image\//.test(f.type) && !/\.(jpe?g|png|webp|gif|heic)$/i.test(f.name)){ toast("사진 파일만 올릴 수 있어요."); return; }
+    const url = URL.createObjectURL(f), im = new Image();
+    im.onload = ()=>{
+      const max = 900, k = Math.min(1, max/Math.max(im.naturalWidth, im.naturalHeight));
+      const w = Math.round(im.naturalWidth*k), h = Math.round(im.naturalHeight*k);
+      const c = document.createElement("canvas"); c.width=w; c.height=h;
+      const cx = c.getContext("2d"); cx.fillStyle="#fff"; cx.fillRect(0,0,w,h); cx.drawImage(im,0,0,w,h);   // 다시 그려서 위치 정보(GPS) 제거
+      b64 = c.toDataURL("image/jpeg", 0.75).split(",")[1];
+      img = new Image(); img.onload = ()=>{ pcv.width=w; pcv.height=h; pcv.classList.remove("hidden"); pickBtn.textContent="📷 다른 사진 고르기"; arr=null; repaint(); }; img.src = c.toDataURL("image/jpeg",0.75);
+      URL.revokeObjectURL(url);
+    };
+    im.onerror = ()=>{ URL.revokeObjectURL(url); toast("이 사진은 열 수 없어요. (아이폰 HEIC 사진이면 화면 캡처해서 올려 보세요)", 3500); };
+    im.src = url;
+  });
+
+  const er = el("div",{class:"err"});
+  const send = el("button",{class:"btn green"},"올리기");
+  const m = modal(el("h3",{text:"＋ 부력 사례 올리기"}),
+    el("div",{class:"field"}, el("label",{text:"① 사진 올리고 부력 화살표 그리기"}), pickBtn, file, pcv, phint, redo),
+    el("div",{class:"field"}, el("label",{text:"② 제목 (무엇에 부력이 이용되나요?)"}), title, cnt1),
+    el("div",{class:"field"}, el("label",{text:"③ 설명 (부력이 어떻게 이용되나요?)"}), desc, cnt2),
+    el("div",{class:"field"}, el("label",{text:"④ 어디에서 작용하는 부력인가요? (하나 골라요)"}), el("div",{class:"radio2"}, lab1, lab2),
+      el("div",{class:"hint-s",text:"🎈 공기 중의 부력은 보통 물체에서는 아주 작아 무시해요. 풍선·열기구처럼 아주 가벼운 물체에서 중요해요."})),
+    el("div",{class:"hint-s",text:"🙅 친구 이름 같은 개인정보는 쓰지 마세요."}), er,
+    el("div",{class:"acts"}, el("button",{class:"btn ghost",onclick:()=>m.close()},"취소"), send));
+  send.addEventListener("click", async()=>{
+    const t = title.value.trim(), d = desc.value.trim();
+    er.textContent = "";
+    if (!b64){ er.textContent = "사진을 골라 주세요."; return; }
+    if (!arr){ er.textContent = "사진 위에 부력 화살표를 그려 주세요."; return; }
+    if (!t){ er.textContent = "제목을 써 주세요."; return; }
+    if (d.length<5){ er.textContent = "설명을 5자 이상 써 주세요."; return; }
+    if (!kind){ er.textContent = "액체(물)인지 기체(공기)인지 하나를 체크해 주세요."; return; }
+    const ang = Math.atan2(-(arr.y2-arr.y1)*pcv.height, (arr.x2-arr.x1)*pcv.width)*180/Math.PI;
+    if (Math.abs(ang-90) > 35 && !confirm("그린 화살표가 위쪽을 향하지 않아요.\n부력은 어느 방향으로 작용할까요? 그래도 이대로 올릴까요?")) return;
+    if (!CFG.APPS_SCRIPT_URL){ er.textContent = "사진 저장 기능이 아직 설정되지 않았어요. 선생님께 알려 주세요."; return; }
+    send.disabled = true; send.textContent = "사진 올리는 중…";
+    try{
+      const up = await PHOTO.upload(b64);
+      if (!up.ok){
+        er.textContent = {too_many:"사진을 너무 자주 올렸어요. 10분 뒤에 다시 해 보세요.", closed:"담벼락이 닫혔어요.", size:"사진이 너무 커요. 다른 사진을 골라 주세요.", gone:"입장 정보가 바뀌었어요. 새로 고침 해 주세요."}[up.err] || "사진을 올리지 못했어요. 잠시 후 다시 해 보세요.";
+        send.disabled=false; send.textContent="올리기"; return;
+      }
+      const r = await rpc("buoy_post",{p_sid:ME.sid,p_token:ME.token,p_kind:kind,p_title:t,p_body:d,p_photo:up.id,
+        p_arrow:{x1:+arr.x1.toFixed(4),y1:+arr.y1.toFixed(4),x2:+arr.x2.toFixed(4),y2:+arr.y2.toFixed(4)}});
+      if (!r.ok){ er.textContent = {limit:"사례는 한 사람당 4개까지 올릴 수 있어요.",closed:"담벼락이 닫혔어요.",bad_title:"제목은 30자까지 써요.",bad_body:"설명은 5~200자로 써요.",no_kind:"하나를 체크해 주세요.",no_photo:"사진을 다시 골라 주세요.",no_arrow:"화살표를 다시 그려 주세요."}[r.err] || "올리지 못했어요.";
+        send.disabled=false; send.textContent="올리기"; return; }
+      m.close(); toast("사례를 올렸어요! 🫧"); loadWall(true);
+    }catch(e){ er.textContent = NETERR; send.disabled=false; send.textContent="올리기"; }
+  });
+  setTimeout(()=>pickBtn.focus(), 50);
+});
+
+/* =====================================================================
+   👩‍🏫 교사 모드
+   ===================================================================== */
+$("#teacherBtnTop").addEventListener("click", openTeacherLogin);
+$("#teacherBtnEntry").addEventListener("click", openTeacherLogin);
+function openTeacherLogin(){
+  if (TPW){ openTeacher(); return; }
+  if (!CONFIGURED){ toast("config.js에 Supabase 주소와 키를 먼저 넣어 주세요."); return; }
+  const pw = el("input",{type:"password",placeholder:"교사 비밀번호",autocomplete:"off"});
+  const er = el("div",{class:"err"});
+  const go = async()=>{
+    try{ const r = await rpc("buoy_t_login",{p_pw:pw.value});
+      if (!r.ok){ er.textContent = r.err==="nopw" ? "교사 비밀번호가 설정되지 않았어요. setup.sql 맨 아래 CHANGE_ME_1234 를 바꿔 다시 실행하세요." : "비밀번호가 맞지 않아요."; return; }
+      TPW = pw.value; m.close(); openTeacher();
+    }catch(e){ er.textContent = NETERR; }
+  };
+  pw.addEventListener("keydown", e=>{ if (e.key==="Enter") go(); });
+  const m = modal(el("h3",{text:"👩‍🏫 교사 모드"}), pw, er, el("div",{class:"acts"}, el("button",{class:"btn ghost",onclick:()=>m.close()},"취소"), el("button",{class:"btn",onclick:go},"들어가기")));
+  setTimeout(()=>pw.focus(),50);
+}
+let TV = "open", TSTATE = null, tTimer = null, TPOSTS = [], tPostCls = "all", tBig = false, tStuCls = "all";
+function openTeacher(){
+  $("#teacher").classList.remove("hidden"); document.body.style.overflow="hidden";
+  setTV(TV); tRefresh();
+  clearInterval(tTimer); tTimer = setInterval(()=>{ if (!$("#teacher").classList.contains("hidden")) tRefresh(true); }, 10000);
+}
+$("#tExit").addEventListener("click", ()=>{
+  $("#teacher").classList.add("hidden"); document.body.style.overflow=""; clearInterval(tTimer);
+});
+$$("#ttabs button").forEach(b=>b.addEventListener("click", ()=>setTV(b.dataset.v)));
+function setTV(v){
+  TV = v; $$("#ttabs button").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
+  ["open","students","req","posts"].forEach(k=>$("#tv-"+k).classList.toggle("hidden", k!==v));
+  if (v==="posts") tLoadPosts(); else renderT();
+}
+async function tRefresh(quiet){
+  try{
+    const r = await rpc("buoy_t_state",{p_pw:TPW});
+    if (!r.ok){ TPW=null; $("#teacher").classList.add("hidden"); document.body.style.overflow=""; toast("비밀번호가 바뀌었어요. 다시 들어가 주세요."); return; }
+    TSTATE = r; renderT();
+    if (TV==="posts" && !quiet) tLoadPosts();
+  }catch(e){ if (!quiet) toast(NETERR); }
+}
+function renderT(){
+  if (!TSTATE) return;
+  const reqs = TSTATE.students.filter(s=>s.pending_nick);
+  const bd = $("#reqBadge"); bd.textContent = reqs.length; bd.classList.toggle("hidden", !reqs.length);
+  if (TV==="open"){
+    const v = $("#tv-open"); v.innerHTML = "";
+    v.append(el("div",{class:"notice info",style:"margin-bottom:14px"},"버튼을 누르면 학생 화면에 몇 초 안에 반영돼요. 닫힌 활동은 학생에게 🔒로 보여요."));
+    const sw = el("div",{class:"switches"});
+    [["lab","🧪 실험실","교과서 166쪽 해 보기 · 미션 4개 → 교과서 1·2번 쓰기 (‘부력’이라는 말은 나오지 않음)"],
+     ["dir","🧭 부력 방향 찾기","8가지 상황에서 부력 화살표 그리기"],
+     ["air","🎈 공기 중의 부력","사과·볼링공 vs 헬륨 풍선·열기구 비교 + 확인 문제"],
+     ["wall","📸 부력 사례 담벼락","사진 + 부력 화살표로 생활 속 사례 올리기"],
+     ["meas","⚖️ 부력의 크기","168쪽 부력 측정 실험 → 169쪽 그림(배·그릇) → 퀴즈 10문제"]].forEach(([k,t,d])=>{
+      const on = TSTATE.open[k];
+      sw.append(el("div",{class:"sw-card"+(on?" open":"")}, el("h4",{text:t}), el("div",{class:"hint-s",text:d}),
+        el("div",{class:"state",text: on? "🟢 열림" : "🔒 닫힘"}),
+        el("button",{class:"btn "+(on?"red":"green"),onclick:async()=>{
+          try{ const r = await rpc("buoy_t_set",{p_pw:TPW,p_key:k,p_val:!on}); if (r.ok){ TSTATE.open[k]=!on; renderT(); } }catch(e){ toast(NETERR); }
+        }}, on? "닫기" : "열기")));
+    });
+    const pon = !!TSTATE.open.pub;
+    sw.append(el("div",{class:"sw-card"+(pon?" open":""),style:"border-style:dashed"}, el("h4",{text:"👀 로그인 없이 담벼락 보기"}),
+      el("div",{class:"hint-s",text:"시험 기간 등: 학생이 입장하지 않고도 첫 화면 버튼으로 모든 반 담벼락을 볼 수 있어요. 글은 못 올려요."}),
+      el("div",{class:"state",text: pon? "🟢 켜짐" : "⚪ 꺼짐"}),
+      el("button",{class:"btn "+(pon?"red":"amber"),onclick:async()=>{
+        if (!pon && !confirm("주소를 아는 사람은 누구나 입장하지 않고 담벼락(모든 반의 사례·반·닉네임)을 볼 수 있어요. 학번은 보이지 않고, 글은 올릴 수 없어요.\n켤까요?")) return;
+        try{ const r = await rpc("buoy_t_set",{p_pw:TPW,p_key:"pub",p_val:!pon}); if (r.ok){ TSTATE.open.pub=!pon; renderT(); } }catch(e){ toast(NETERR); }
+      }}, pon? "끄기" : "켜기")));
+    v.append(sw);
+    const n = TSTATE.students.length;
+    v.append(el("div",{class:"hint-s",style:"margin-top:14px"},"입장한 학생: "+n+"명"));
+  }
+  if (TV==="students"){
+    const v = $("#tv-students"); v.innerHTML = "";
+    const sel = el("div",{class:"seg",style:"margin-bottom:12px;flex-wrap:wrap"});
+    const opts=[["all","전체"]]; for(let c=1;c<=CFG.CLASS_COUNT;c++) opts.push([String(c),c+"반"]);
+    opts.forEach(([val,t])=>sel.append(el("button",{class:tStuCls===val?"on":"",style:"flex:0 0 auto;padding:8px 14px",onclick:()=>{tStuCls=val; renderT();}},t)));
+    v.append(sel);
+    const list = TSTATE.students.filter(s=> tStuCls==="all" || (s.cls%100)===+tStuCls);
+    const tb = el("table",{class:"st"});
+    tb.append(el("tr",{}, ...["학번","닉네임","실험실 ①②③④","방향 찾기","공기","측정 ①②③","그림","퀴즈","사례","관리"].map(h=>el("th",{text:h}))));
+    list.forEach(s=>{
+      const md = el("td",{}); for(let i=0;i<4;i++) md.append(el("span",{class:"dot"+((s.missions>>i)&1?" y":"")}));
+      let dn=0; for(let i=0;i<8;i++) if ((s.dir>>i)&1) dn++;
+      const ex = s.extra|0, mm = el("td",{}); for(let i=1;i<=3;i++) mm.append(el("span",{class:"dot"+((ex>>i)&1?" y":"")}));
+      const fg = el("td",{}); for(let i=4;i<=5;i++) fg.append(el("span",{class:"dot"+((ex>>i)&1?" y":"")}));
+      const bits = x=>{ let n=0; for(let i=0;i<12;i++) if ((x>>i)&1) n++; return n; };
+      const qz = bits(s.qdone|0) ? bits(s.qok|0)+" / "+bits(s.qdone|0) : "-";
+      tb.append(el("tr",{},
+        el("td",{text:s.sid}), el("td",{class:"l"}, s.nickname, s.pending_nick? el("span",{class:"badge",style:"background:var(--warn)",text:"요청: "+s.pending_nick}) : null),
+        md, el("td",{text:dn+" / 8"}), el("td",{text:(ex&1)?"✅":"-"}), mm, fg, el("td",{title:"맞힌 문제 / 푼 문제", text:qz}), el("td",{text:String(s.posts)}),
+        el("td",{}, el("button",{class:"btn ghost small",onclick:()=>tRename(s)},"닉네임 바꾸기"), " ",
+          el("button",{class:"btn red small",onclick:async()=>{
+            if (!confirm(s.sid+" ("+s.nickname+") 학생의 기록과 올린 글을 모두 지울까요?\n학생은 다시 입장해야 해요.")) return;
+            try{ await rpc("buoy_t_delete_student",{p_pw:TPW,p_sid:s.sid}); tRefresh(); }catch(e){ toast(NETERR); }
+          }},"기록 삭제"))));
+    });
+    if (!list.length) tb.append(el("tr",{}, el("td",{colspan:"10",text:"아직 입장한 학생이 없어요."})));
+    v.append(el("div",{class:"tscroll"}, tb));
+    v.append(el("div",{class:"hint-s",style:"margin-top:8px"},"그림: 그릇·배 문제 / 퀴즈: 처음 푼 답이 맞은 문제 수 / 푼 문제 수. 10초마다 자동으로 새로 고쳐져요. 학번을 잘못 입력한 학생은 ‘기록 삭제’ 후 다시 입장시키세요."));
+  }
+  if (TV==="req"){
+    const v = $("#tv-req"); v.innerHTML = "";
+    if (!reqs.length) v.append(el("div",{class:"empty",text:"닉네임 변경 요청이 없어요."}));
+    reqs.forEach(s=> v.append(el("div",{class:"card",style:"margin-bottom:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"},
+      el("b",{text:s.sid}), el("span",{text:s.nickname+"  →  "}), el("b",{style:"font-size:22px",text:s.pending_nick}),
+      el("span",{style:"margin-left:auto"}),
+      el("button",{class:"btn green small",onclick:()=>tDecide(s,true)},"승인"),
+      el("button",{class:"btn red small",onclick:()=>tDecide(s,false)},"거절"))));
+  }
+}
+async function tDecide(s, ok){
+  try{ const r = await rpc("buoy_t_nick_decide",{p_pw:TPW,p_sid:s.sid,p_approve:ok});
+    if (!r.ok && r.err==="dup_nick") toast("같은 반에 이미 있는 닉네임이라 승인할 수 없어요.");
+    tRefresh(); }catch(e){ toast(NETERR); }
+}
+function tRename(s){
+  const inp = el("input",{type:"text",maxlength:"10",value:s.nickname}); const er = el("div",{class:"err"});
+  const m = modal(el("h3",{text:"닉네임 바꾸기 · "+s.sid}), el("div",{class:"row"}, inp, el("button",{class:"btn amber",style:"font-size:24px;padding:8px 14px",onclick:()=>inp.value=randomNick()},"🎲")), er,
+    el("div",{class:"acts"}, el("button",{class:"btn ghost",onclick:()=>m.close()},"취소"), el("button",{class:"btn",onclick:async()=>{
+      try{ const r = await rpc("buoy_t_rename",{p_pw:TPW,p_sid:s.sid,p_nick:inp.value});
+        if (!r.ok){ er.textContent = ERRMSG[r.err] || "바꾸지 못했어요."; return; }
+        m.close(); tRefresh(); }catch(e){ er.textContent = NETERR; }
+    }},"바꾸기")));
+}
+async function tCleanup(manual){
+  try{
+    const r = await PHOTO.cleanup(TPW);
+    if (r.ok){ store.set("buoy_cleanup", new Date().toDateString()); if (manual) toast(r.trashed ? "지워진 글의 사진 "+r.trashed+"장을 휴지통으로 옮겼어요." : "정리할 사진이 없어요."); }
+    else if (manual) toast(r.err==="noapps" ? "config.js에 APPS_SCRIPT_URL이 없어요." : "사진을 정리하지 못했어요. Code.gs 설정을 확인해 주세요.");
+  }catch(e){ if (manual) toast("사진 저장 프로그램(Apps Script)에 연결하지 못했어요."); }
+}
+async function tLoadPosts(){
+  const v = $("#tv-posts");
+  try{ const r = await rpc("buoy_t_posts",{p_pw:TPW}); if (r.ok) TPOSTS = r.posts; }catch(e){ toast(NETERR); }
+  if (CFG.APPS_SCRIPT_URL && store.get("buoy_cleanup")!==new Date().toDateString()) tCleanup(false);   // 하루 한 번 자동 정리
+  v.innerHTML = "";
+  const bar = el("div",{class:"row",style:"flex-wrap:wrap;margin-bottom:12px"});
+  const sel = el("div",{class:"seg",style:"flex-wrap:wrap"});
+  const opts=[["all","전체"]]; for(let c=1;c<=CFG.CLASS_COUNT;c++) opts.push([String(c),c+"반"]);
+  opts.forEach(([val,t])=>sel.append(el("button",{class:tPostCls===val?"on":"",style:"flex:0 0 auto;padding:8px 14px",onclick:()=>{tPostCls=val; tLoadPosts();}},t)));
+  bar.append(sel, el("span",{style:"margin-left:auto"}),
+    el("button",{class:"btn small "+(tBig?"":"ghost"),onclick:()=>{ tBig=!tBig; tLoadPosts(); }}, tBig? "🔍 크게 보기 끄기" : "🔍 크게 보기 (학번 숨김)"),
+    el("button",{class:"btn ghost small",onclick:tLoadPosts},"↻ 새로 고침"),
+    el("button",{class:"btn ghost small",title:"지워진 글의 사진을 드라이브 휴지통으로 옮겨요",onclick:()=>tCleanup(true)},"🧹 사진 정리"));
+  v.append(bar);
+  const shown = tPostCls==="all" ? TPOSTS : TPOSTS.filter(p=>(p.cls%100)===+tPostCls);
+  if (!CFG.APPS_SCRIPT_URL) v.append(el("div",{class:"notice warn",style:"margin-bottom:12px"},"⚠️ config.js에 APPS_SCRIPT_URL(사진 저장 주소)이 없어요. 학생이 사진을 올릴 수 없어요. 설치 안내서 3단계를 확인해 주세요."));
+  const w = wallColumns(shown, {sid:!tBig, big:tBig, onDel: tBig? null : async p=>{
+    if (!confirm("‘"+p.title+"’ 글을 지울까요?")) return;
+    try{ await rpc("buoy_t_delete_post",{p_pw:TPW,p_id:p.id}); tLoadPosts(); tRefresh(true); }catch(e){ toast(NETERR); }
+  }});
+  const wrap = el("div",{class: tBig? "big-wall":""}, w);
+  v.append(wrap);
+}
+/* 수업 화면 보기 */
+$("#tPreview").addEventListener("click", ()=>{
+  MODE = "preview";
+  $("#pubBar").classList.add("hidden"); $$("#tabs button").forEach(b=>b.classList.remove("hidden"));
+  PROG = EMPTY_PROG(); viewM = null; airQDone = false; airWrong.length = 0; MEAS.reset(); QZ.reset();
+  for (const k in mState) delete mState[k];
+  dSt.forEach(s=>Object.assign(s,{tries:0,solved:false,hint:false,reveal:false,arrow:null,msg:null,cls:null}));
+  $("#teacher").classList.add("hidden"); document.body.style.overflow="";
+  $("#previewBar").classList.remove("hidden");
+  $("#entry").classList.add("hidden"); $("#app").classList.remove("hidden");
+  renderMe(); setTab(TAB); renderMission(); renderDir(); renderAir();
+});
+$("#previewBack").addEventListener("click", ()=>{
+  $("#previewBar").classList.add("hidden");
+  viewM = null; for (const k in mState) delete mState[k];
+  dSt.forEach(s=>Object.assign(s,{tries:0,solved:false,hint:false,reveal:false,arrow:null,msg:null,cls:null}));
+  airQDone = false; airWrong.length = 0; MEAS.reset(); QZ.reset();
+  if (ME){ MODE="student"; PROG = loadProg(store.get("buoy_prog_"+ME.sid)); startStudent(); }
+  else { MODE="student"; PROG = EMPTY_PROG(); showEntry(); }
+  openTeacher();
+});
+
+/* ================== 시작 ================== */
+renderMission(); renderDir(); renderAir();
+ME = store.get("buoy_me");
+if (ME && ME.sid && ME.token) startStudent(); else { ME=null; showEntry(); }
+})();
+</script>
+</body>
+</html>
