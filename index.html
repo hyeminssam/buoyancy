@@ -203,7 +203,7 @@ table.st td.l{text-align:left}
 footer.copy{margin:40px auto 24px;padding:0 16px;max-width:1180px;text-align:center;color:#7A8E9B;font-size:12.5px;line-height:1.6}
 
 /* 부력의 크기 탭 */
-.subnav{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.subnav{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
 .subnav button{border:2px solid var(--line);background:#fff;border-radius:16px;padding:12px 10px;font-family:"Jua";font-size:22px;color:var(--ink2);line-height:1.25}
 .subnav button small{display:block;font-family:"Noto Sans KR";font-size:14px;font-weight:500;opacity:.8}
 .subnav button.on{border-color:var(--pri);background:var(--priSoft);color:var(--pri2);box-shadow:0 3px 0 #9FD8F0}
@@ -326,8 +326,8 @@ table.rec input.bad{border-color:var(--bad);background:var(--badSoft)}
 <main id="app" class="wrap hidden">
   <nav class="tabs" id="tabs">
     <button data-t="lab">🧪 실험실</button>
-    <button data-t="dir">🧭 부력 방향 찾기</button>
     <button data-t="air">🎈 공기 중의 부력</button>
+    <button data-t="dir">🧭 부력 방향 찾기</button>
     <button data-t="wall">📸 부력 사례 담벼락</button>
     <button data-t="meas">⚖️ 부력의 크기</button>
   </nav>
@@ -349,16 +349,11 @@ table.rec input.bad{border-color:var(--bad);background:var(--badSoft)}
             <div class="hint-s">버튼을 <b>꾹 누르고 있는 동안</b> 물이 들어가고 빠져요.</div>
           </div>
           <div class="toggle" id="arrowToggle" role="switch" aria-checked="false" tabindex="0"><span class="sw"></span><span>➡️ 화살표 보기</span></div>
-          <div class="legend hidden" id="arrowLegend"><span><i style="background:var(--buoy)"></i><span id="lgB">물이 구를 밀어 올리는 힘</span></span><span><i style="background:var(--grav)"></i>중력(무게)</span></div>
+          <div class="legend hidden" id="arrowLegend"><span><i style="background:var(--buoy)"></i><span id="lgB">물이 구를 밀어 올리는 힘</span></span><span><i style="background:var(--grav)"></i>중력(무게)</span><span><i style="background:#16A34A"></i>용수철의 탄성력</span></div>
           <div>
             <h4>📏 용수철 길이 비교</h4>
             <div class="bars"><div class="b init"><i id="barInit"></i></div><div class="b now"><i id="barNow"></i></div></div>
             <div class="bars-l"><span>처음</span><span>지금</span></div>
-          </div>
-          <div>
-            <h4>🔬 더 알아보기 · 공 바꾸기</h4>
-            <div class="seg" id="ballSeg"><button data-b="styro" class="on">스타이로폼 구</button><button data-b="pp">탁구공</button></div>
-            <div class="hint-s" id="ballHint">미션을 모두 마치면 탁구공으로도 실험할 수 있어요.</div>
           </div>
           <button class="btn ghost small" id="resetLab">↺ 처음 상태로 (물 모두 빼기)</button>
         </div>
@@ -423,26 +418,12 @@ table.rec input.bad{border-color:var(--bad);background:var(--badSoft)}
   <section id="p-meas" class="pane hidden">
     <div class="card lockbox hidden" data-lock><div class="big">🔒</div><h2>아직 열리지 않았어요</h2><p>선생님이 ‘부력의 크기’를 열면 시작할 수 있어요.</p></div>
     <div data-body>
+      <div class="notice info" style="margin-bottom:12px">🔬 교과서 168쪽 <b>‘물속에서 부력 측정하기’</b>는 실험실에서 <b>직접</b> 해요. 실험을 마치고 교과서에 결과를 쓴 다음, 여기에서 그림과 퀴즈로 정리해 봐요.</div>
       <div class="subnav" id="measNav">
-        <button data-s="exp" class="on">① 물속에서 부력 측정하기<small>교과서 168쪽</small></button>
-        <button data-s="fig">② 그림으로 생각하기<small>교과서 169쪽</small></button>
-        <button data-s="quiz">③ 어느 쪽 부력이 클까?<small>퀴즈 10문제</small></button>
+        <button data-s="fig" class="on">① 그림으로 생각하기<small>교과서 169쪽</small></button>
+        <button data-s="quiz">② 어느 쪽 부력이 클까?<small>퀴즈 10문제</small></button>
       </div>
-      <div id="ms-exp">
-        <div class="mission" id="measMission"></div>
-        <div class="lab-grid">
-          <div class="stage"><canvas id="measCv" width="640" height="700" aria-label="디지털 용수철저울에 단 추를 물속에 담그는 가상 실험"></canvas></div>
-          <div class="card panel ctrl">
-            <div class="readout"><div class="rl">📟 디지털 용수철저울</div><div class="rv" id="measRead">3.00 N</div><div class="rs" id="measState">추가 모두 공기 중에 있어요</div></div>
-            <div class="pour"><button class="btn" id="measUp">▲ 올리기</button><button class="btn" id="measDown">▼ 내리기</button></div>
-            <div class="hint-s">버튼을 <b>꾹 누르거나</b>, 그림의 추를 위아래로 끌어 보세요.</div>
-            <button class="btn amber" id="measRec" style="font-size:21px;padding:14px">📋 지금 값 기록하기</button>
-            <table class="rec" id="measTable"></table>
-            <div class="toggle" id="measArrow" role="switch" aria-checked="false" tabindex="0"><span class="sw"></span><span>➡️ 부력 화살표 보기</span></div>
-          </div>
-        </div>
-      </div>
-      <div id="ms-fig" class="hidden">
+      <div id="ms-fig">
         <div class="seg figseg" id="figSeg"><button data-f="bowl" class="on">🥣 그릇에 작용하는 부력</button><button data-f="ship">🚢 배에 작용하는 부력</button></div>
         <div class="stage fig-stage"><canvas id="figCv" width="1200" height="640" aria-label="교과서 169쪽 그림 배와 그릇에 작용하는 부력"></canvas></div>
         <div class="card" id="figQ" style="margin-top:14px"></div>
@@ -532,10 +513,10 @@ const NETERR = "서버에 연결하지 못했어요. 인터넷을 확인하고 �
 /* ================== 상태 ================== */
 let ME = null;               // {sid, token, nickname}
 let MODE = "student";        // student | preview
-const TABS = ["lab","dir","air","wall","meas"];
-const TAB_NAMES = {lab:"🧪 실험실",dir:"🧭 부력 방향 찾기",air:"🎈 공기 중의 부력",wall:"📸 부력 사례 담벼락",meas:"⚖️ 부력의 크기"};
+const TABS = ["lab","air","dir","wall","meas"];
+const TAB_NAMES = {lab:"🧪 실험실",air:"🎈 공기 중의 부력",dir:"🧭 부력 방향 찾기",wall:"📸 부력 사례 담벼락",meas:"⚖️ 부력의 크기"};
 let OPEN = {lab:false,dir:false,air:false,wall:false,meas:false,pub:false};
-// extra: bit0 공기 확인 문제, bit1~3 부력 측정 미션, bit4 그릇 그림 문제, bit5 배 그림 문제
+// extra: bit0 공기 확인 문제, bit1~3 (사용 안 함: 예전 측정 미션), bit4 그릇 그림 문제, bit5 배 그림 문제
 // qdone/qok: 퀴즈 문항별 푼 것 / 정답 맞힌 것
 const EMPTY_PROG = ()=>({missions:0, dir:0, extra:0, qdone:0, qok:0});
 let PROG = EMPTY_PROG();
@@ -776,7 +757,6 @@ const LAB = {
 };
 const BALLS = {
   styro:{name:"스타이로폼 구", r:46, W:14, B:92, c1:"#FFD447", c2:"#F2A900"},
-  pp:{name:"탁구공", r:30, W:8, B:92*Math.pow(30/46,3), c1:"#FFFFFF", c2:"#E7D9C4"}
 };
 const springBaseY = LAB.yb - 12;
 function ballCfg(){ return BALLS[LAB.ball]; }
@@ -819,11 +799,6 @@ function setArrows(on){
 }
 arrowToggle.addEventListener("click", ()=>setArrows(!LAB.showArrows));
 arrowToggle.addEventListener("keydown", e=>{ if(e.key===" "||e.key==="Enter"){ e.preventDefault(); setArrows(!LAB.showArrows);} });
-$$("#ballSeg button").forEach(b=>b.addEventListener("click", ()=>{
-  if (b.dataset.b==="pp" && (PROG.missions&15)!==15 && MODE!=="preview"){ toast("미션 4개를 먼저 마쳐 보세요!"); return; }
-  LAB.ball = b.dataset.b; $$("#ballSeg button").forEach(x=>x.classList.toggle("on", x===b));
-  LAB.L = Linit(); LAB.v = 0; LAB.vol = 0;
-}));
 
 function stepLab(dt){
   const b = ballCfg();
@@ -903,7 +878,7 @@ function drawLab(){
   const grd = ctx.createRadialGradient(320-b.r*0.35, g.cy-b.r*0.4, b.r*0.15, 320, g.cy, b.r);
   grd.addColorStop(0, "#FFFFFF"); grd.addColorStop(0.25, b.c1); grd.addColorStop(1, b.c2);
   ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(320, g.cy, b.r, 0, Math.PI*2); ctx.fill();
-  ctx.strokeStyle = LAB.ball==="pp" ? "rgba(150,120,80,.7)" : "rgba(190,130,0,.45)"; ctx.lineWidth = 2; ctx.stroke();
+  ctx.strokeStyle = "rgba(190,130,0,.45)"; ctx.lineWidth = 2; ctx.stroke();
   if (LAB.ball==="styro"){ ctx.fillStyle="rgba(200,140,0,.18)"; for(let i=0;i<26;i++){ const a=i*2.4, rr=(i*13%b.r)*0.9; ctx.beginPath(); ctx.arc(320+Math.cos(a)*rr, g.cy+Math.sin(a)*rr, 2.2, 0, 7); ctx.fill(); } }
   // 물줄기 + 물병
   const pouring = LAB.pour>0 && LAB.vol<LAB.maxMl;
@@ -939,11 +914,29 @@ function drawLab(){
   label(ctx, "비커(1000 mL)", 320, 540, "#4B6578", 17, "center");
   // 화살표
   if (LAB.showArrows){
+    // 세 힘: 물이 밀어 올리는 힘(위), 중력(아래), 용수철의 탄성력(용수철이 늘어나면 아래, 눌리면 위)
     const s = 2.2, gl = b.W*s, bl = b.B*f*s;
-    arrow(ctx, 320, g.cy, 320, g.cy+gl+6, "#2563EB", 7);
-    label(ctx, "중력", 334, g.cy+gl+4, "#1D4ED8", 21);
+    const fe = LAB.L0 - LAB.L;                 // + 위쪽(눌린 용수철), − 아래쪽(늘어난 용수철)
+    const el = Math.abs(fe)*s;
+    arrow(ctx, 302, g.cy, 302, g.cy+gl+6, "#2563EB", 7);
+    label(ctx, "중력", 292, g.cy+gl+4, "#1D4ED8", 21, "right");
+    if (el>3){
+      const ey = fe<0 ? g.cy+el : g.cy-el;
+      arrow(ctx, 338, g.cy, 338, ey, "#16A34A", 7);
+      label(ctx, "탄성력", 350, fe<0 ? ey-6 : (bl>3 ? g.cy+22 : ey+12), "#15803D", 21);
+    }
     if (bl>3){ arrow(ctx, 320, g.cy, 320, g.cy-bl, "#E8473B", 8); label(ctx, "물이 밀어 올리는 힘", 334, g.cy-bl+10, "#C2281E", 21); }
     ctx.fillStyle="#12324A"; ctx.beginPath(); ctx.arc(320,g.cy,5,0,7); ctx.fill();
+    // 멈춰 있을 때: 힘의 평형
+    if (Math.abs(LAB.v) < 6 && LAB.pour===0){
+      const txt = fe < -1 ? "구가 멈춰 있어요 → 물이 밀어 올리는 힘 = 중력 + 탄성력"
+                : (bl > 3 ? "구가 멈춰 있어요 → 위로 미는 힘 = 아래로 당기는 힘" : "구가 멈춰 있어요 → 탄성력 = 중력");
+      ctx.save(); ctx.font="700 17px 'Noto Sans KR', sans-serif"; const w = ctx.measureText(txt).width + 28;
+      ctx.fillStyle="rgba(255,255,255,.95)"; ctx.strokeStyle="#16A34A"; ctx.lineWidth=2.5;
+      const cx0 = Math.max(10 + w/2, Math.min(440 - w/2, 230));
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(cx0-w/2, 14, w, 34, 10) : ctx.rect(cx0-w/2, 14, w, 34); ctx.fill(); ctx.stroke();
+      ctx.fillStyle="#15803D"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("⚖️ "+txt, cx0, 31); ctx.restore();
+    }
   }
   // 막대 비교
   const sc = 0.72;
@@ -1011,8 +1004,7 @@ function renderMission(){
         el("div",{style:"font-weight:900;font-size:21px"},"📖 교과서 166쪽 ‘해 보기’ 1번, 2번에 답을 직접 써 보세요."),
         el("ol",{}, el("li",{text:"스타이로폼 구가 물에 잠길수록 용수철의 길이는 어떻게 변하는지 이야기해 보자."}),
                     el("li",{text:"스타이로폼 구가 물속에서 받은 힘을 용수철의 길이 변화와 관련지어 이야기해 보자."})),
-        el("div",{style:"font-size:17px;color:#6B5200"},"✏️ 2번은 ‘용수철이 어떻게 변했다 → 그래서 구에 어느 쪽으로 힘이 작용했다’처럼 길이 변화와 힘의 방향을 이어서 써요. 다 쓰면 ‘더 알아보기’에서 탁구공으로도 실험해 보세요!")));
-    $("#ballHint").textContent = "탁구공으로 바꾸면 물이 밀어 올리는 힘과 용수철 길이가 어떻게 달라지는지 비교해 보세요.";
+        el("div",{style:"font-size:17px;color:#6B5200"},"✏️ 2번은 ‘용수철이 어떻게 변했다 → 그래서 구에 어느 쪽으로 힘이 작용했다’처럼 길이 변화와 힘의 방향을 이어서 써요.")));
     return;
   }
   const M = MISSIONS[i], st = mState[i] || {};
@@ -1069,9 +1061,9 @@ const SCENES = [
   {key:"float", name:"물에 뜬 낚시찌", water:236, cx:320, cy:228, R:70, g:40, b:40, anim:"bob",
    prompt:"낚시찌가 물에 떠 있어요. 낚시찌에 작용하는 부력을 화살표로 그려 보세요.",
    explain:"낚시찌는 부력 때문에 물에 떠 있어요. 물고기가 미끼를 물면 찌가 아래로 끌려 내려가요."},
-  {key:"ball", name:"물속으로 누른 공", water:190, cx:320, cy:300, R:65, g:16, b:72, anim:"pop",
+  {key:"ball", name:"물속으로 누른 공", water:190, cx:320, cy:300, R:65, g:34, b:136, anim:"pop",
    prompt:"손으로 공을 물속에 꾹 누르고 있어요. 공에 작용하는 부력을 화살표로 그려 보세요.",
-   explain:"물속으로 누른 공에도 부력이 위로 작용해요. 손을 놓으면 부력 때문에 공이 위로 튀어 올라요!"}
+   explain:"물속으로 누른 공에도 부력이 위로 작용해요. 손을 놓으면 부력 때문에 공이 떠올라요. 공이 물 밖으로 나올수록 물에 잠긴 부피가 줄어서 부력이 작아지고, 물에 떠서 멈추면 부력과 중력이 같아져요(힘의 평형). ‘▶ 움직여 보기’로 확인해 보세요!"}
 ];
 let dIdx = 0;
 const dSt = SCENES.map(()=>({tries:0, solved:false, hint:false, reveal:false, arrow:null, msg:null, cls:null}));
@@ -1118,7 +1110,7 @@ function scenePos(i){
     else if (s.anim==="rise") y -= Math.min(t,3)*38;
     else if (s.anim==="sink") y += Math.min(t,3)*26;
     else if (s.anim==="diag"){ x += Math.min(t,3)*34; y += Math.min(t,3)*15; }
-    else if (s.anim==="pop"){ const tt = Math.max(0,t-0.4); y -= Math.min(110, tt*tt*160); if (tt>0.83) y += Math.sin((tt-0.83)*7)*5*Math.exp(-(tt-0.83)); }
+    else if (s.anim==="pop"){ const tt = Math.max(0,t-0.4); const rise = 130; const k = Math.min(1, tt*tt*1.4); y -= rise*k; if (k>=1) y += Math.sin((tt-0.85)*6)*4*Math.exp(-(tt-0.85)*1.5); }
   }
   return {x,y};
 }
@@ -1233,10 +1225,17 @@ function drawDir(){
   // 힌트/정답 화살표
   const done = solvedD(dIdx);
   if (st.hint || done){
-    arrow(ctx, p.x, p.y, p.x, p.y+s.g, "#2563EB", 7); label(ctx, "중력", p.x+14, p.y+s.g-6, "#1D4ED8", 20);
+    arrow(ctx, p.x, p.y, p.x, p.y+s.g, "#2563EB", 7); label(ctx, "중력", p.x+14, p.y+s.g-2, "#1D4ED8", 20);
   }
   if (done){
-    arrow(ctx, p.x, p.y, p.x, p.y-s.b, "#E8473B", 8); label(ctx, "부력", p.x+14, p.y-s.b+12, "#C2281E", 21);
+    let bLen = s.b;
+    if (s.key==="ball"){                       // 공: 물에 잠긴 부피만큼만 부력
+      const r = 46, d = Math.max(0, Math.min(2*r, p.y + r - s.water));
+      const frac = d*d*(3*r-d)/(4*r*r*r);
+      bLen = Math.max(0, s.b*frac);
+      if (animT>=0 && frac < 0.999) label(ctx, frac > 0.3 ? "물 밖으로 나오면 부력이 작아져요" : "떠 있을 때: 부력 = 중력 (힘의 평형)", 470, 40, "#C2281E", 19, "center");
+    }
+    if (bLen > 2){ arrow(ctx, p.x, p.y, p.x, p.y-bLen, "#E8473B", 8); if (s.key==="ball") label(ctx, "부력", p.x-14, p.y-bLen+8, "#C2281E", 21, "right"); else label(ctx, "부력", p.x+14, p.y-bLen+12, "#C2281E", 21); }
     ctx.fillStyle="#12324A"; ctx.beginPath(); ctx.arc(p.x,p.y,5,0,7); ctx.fill();
   }
   if (st.arrow && !done){
@@ -1376,247 +1375,31 @@ function drawAir(){
 }
 
 /* =====================================================================
-   ⚖️ 부력의 크기 — ① 물속에서 부력 측정하기(168쪽) ② 그림(169쪽) ③ 퀴즈
+   ⚖️ 부력의 크기 — ① 그림으로 생각하기(169쪽) ② 퀴즈
+   (168쪽 ‘물속에서 부력 측정하기’는 실험실에서 직접 해요)
    ===================================================================== */
 const MEAS = (function(){
-  const W=640, H=700, TABLE=658, BK={x0:230, x1:430, top:330, bot:650}, WL0=450;
-  const ARM_MIN=70, ARM_MAX=294, WH=34, GAP=64;        // 추 높이, 추 사이 간격
-  const AIR_W = 3.00, PART = [0.17, 0.12, 0.12];        // 교과서 값: 2.83 / 2.71 / 2.59 N (아래 추부터)
-  const cv = $("#measCv"); const ctx = setupCanvas(cv, W, H);
-  const S = {arm:ARM_MIN, v:0, move:0, rec:[null,null,null,null], showArrow:false, sub:"exp",
-             inputs:["","",""], inputBad:[false,false,false], q:0, qWrong:{}, solved:{}, view:null};
-  const ROWS = ["공기 중","(가) 추 1개가 잠길 때","(나) 추 2개가 잠길 때","(다) 추 3개가 잠길 때"];
-  function done(i){ return !!(PROG.extra & (1<<(i+1))); }
-  function cur(){ for (let i=0;i<3;i++) if (!done(i)) return i; return 3; }
-  function setDone(i){ if (done(i)) return; PROG.extra |= (1<<(i+1)); saveProgress(); }
-
-  function geom(){
-    const a = S.arm, sTop = a+16, sBot = a+136, w0 = a+160;
-    const tops = [w0, w0+GAP, w0+2*GAP];               // 0: 맨 위 추, 2: 맨 아래 추
-    let wl = WL0, f = [0,0,0];
-    for (let it=0; it<2; it++){
-      f = tops.map(t=>Math.max(0, Math.min(1, (t+WH - wl)/WH)));
-      wl = WL0 - 3.5*(f[0]+f[1]+f[2]);                  // 잠긴 부피만큼 물이 조금 올라감
-    }
-    // 아래 추부터 잠김: 맨 아래(2)=0.17, 가운데(1)=0.12, 맨 위(0)=0.12
-    const B = f[2]*PART[0] + f[1]*PART[1] + f[0]*PART[2];
-    return {a, sTop, sBot, tops, f, wl, B, read: AIR_W - B};
-  }
-  function state(g){
-    const full = g.f.filter(x=>x>=0.9).length, part = g.f.some(x=>x>0.1 && x<0.9);
-    return {n: full, clean: !part};
-  }
-  function fmt(x){ return (Math.round(x*100)/100).toFixed(2); }
-
-  function draw(){
-    const g = geom();
-    ctx.clearRect(0,0,W,H);
-    // 책상
-    ctx.fillStyle="#E7D6BC"; ctx.fillRect(0,TABLE,W,H-TABLE); ctx.fillStyle="#D4BE9C"; ctx.fillRect(0,TABLE,W,5);
-    // 스탠드
-    ctx.fillStyle="#5B6B78"; ctx.fillRect(40,TABLE-14,150,14);
-    ctx.fillStyle="#8A99A6"; ctx.fillRect(92,40,12,TABLE-54);
-    ctx.fillStyle="#6B7C88"; ctx.fillRect(84,g.a-12,28,24);                 // 집게 잡이
-    ctx.fillStyle="#8A99A6"; ctx.fillRect(104,g.a-5,232,10);                 // 막대
-    ctx.fillStyle="#6B7C88"; ctx.beginPath(); ctx.arc(330,g.a+4,6,0,7); ctx.fill();
-    // 비커 뒤
-    ctx.fillStyle="rgba(255,255,255,.55)"; ctx.fillRect(BK.x0,BK.top,BK.x1-BK.x0,BK.bot-BK.top);
-    // 걸이 + 용수철저울
-    ctx.strokeStyle="#4B5A66"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(330,g.a+8); ctx.lineTo(330,g.sTop); ctx.stroke();
-    ctx.fillStyle="#F59E0B"; roundRect(ctx,302,g.sTop,56,g.sBot-g.sTop,12); ctx.fill();
-    ctx.fillStyle="#D97706"; roundRect(ctx,302,g.sTop,56,18,8); ctx.fill();
-    ctx.fillStyle="#1F2937"; roundRect(ctx,308,g.sTop+28,44,62,6); ctx.fill();
-    ctx.fillStyle="#B5F5C9"; roundRect(ctx,311,g.sTop+31,38,56,4); ctx.fill();
-    ctx.save(); ctx.translate(330,g.sTop+59); ctx.rotate(-Math.PI/2);
-    ctx.fillStyle="#0F3D24"; ctx.font="900 21px 'Noto Sans KR', monospace"; ctx.textAlign="center"; ctx.textBaseline="middle";
-    ctx.fillText(fmt(g.read), -2, 0); ctx.restore();
-    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(330,g.sTop+108,6,0,7); ctx.fill();
-    // 고리 + 추
-    ctx.strokeStyle="#4B5A66"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(330,g.sBot); ctx.lineTo(330,g.tops[0]); ctx.stroke();
-    g.tops.forEach((t,i)=>{
-      if (i>0){ ctx.strokeStyle="#4B5A66"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(330,g.tops[i-1]+WH); ctx.lineTo(330,t); ctx.stroke(); }
-      const gr = ctx.createLinearGradient(307,0,353,0); gr.addColorStop(0,"#A16207"); gr.addColorStop(.45,"#FACC15"); gr.addColorStop(1,"#92400E");
-      ctx.fillStyle=gr; roundRect(ctx,307,t+4,46,WH-4,5); ctx.fill();
-      ctx.fillStyle="#CA8A04"; ctx.fillRect(312,t,36,6);
-      ctx.fillStyle="#78350F"; ctx.font="700 12px 'Noto Sans KR'"; ctx.textAlign="center"; ctx.fillText("100 g",330,t+24);
-    });
-    // 물
-    ctx.save(); ctx.beginPath(); ctx.rect(BK.x0+3,BK.top,BK.x1-BK.x0-6,BK.bot-BK.top); ctx.clip();
-    const wg = ctx.createLinearGradient(0,g.wl,0,BK.bot); wg.addColorStop(0,"rgba(85,180,235,.42)"); wg.addColorStop(1,"rgba(30,120,200,.52)");
-    ctx.fillStyle=wg; ctx.fillRect(BK.x0,g.wl,BK.x1-BK.x0,BK.bot-g.wl);
-    ctx.strokeStyle="rgba(20,110,190,.6)"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(BK.x0,g.wl); ctx.lineTo(BK.x1,g.wl); ctx.stroke();
-    ctx.restore();
-    // 비커 테두리
-    ctx.strokeStyle="rgba(80,110,130,.85)"; ctx.lineWidth=4; ctx.lineJoin="round";
-    ctx.beginPath(); ctx.moveTo(BK.x0-8,BK.top-4); ctx.lineTo(BK.x0,BK.top+6); ctx.lineTo(BK.x0,BK.bot); ctx.lineTo(BK.x1,BK.bot); ctx.lineTo(BK.x1,BK.top); ctx.stroke();
-    ctx.strokeStyle="rgba(255,255,255,.9)"; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(BK.x1-14,BK.top+24); ctx.lineTo(BK.x1-14,BK.bot-20); ctx.stroke();
-    label(ctx,"비커(1000 mL)",330,682,"#4B6578",16,"center");
-    // 부력 화살표
-    if (S.showArrow && g.B>0.005){
-      const L = g.B*260, sub = g.tops.map((t,i)=>g.f[i]>0? t+WH*(1-g.f[i]/2):null).filter(x=>x!=null);
-      const y0 = sub.reduce((a,b)=>a+b,0)/sub.length;
-      arrow(ctx, 392, y0, 392, y0-L, "#E8473B", 8);
-      label(ctx,"부력",404,y0-L+12,"#C2281E",22);
-    }
-    // 잡기 안내
-    if (S.arm===ARM_MIN && !S.rec.some(Boolean)) label(ctx,"↕ 추를 끌어 내려 보세요",450,g.tops[1]+16,"#4B5A66",17);
-    // 오른쪽 숫자판
-    $("#measRead").textContent = fmt(g.read)+" N";
-    const st = state(g);
-    $("#measState").textContent = !st.clean ? "추가 물에 반쯤 잠겼어요" : (st.n===0 ? "추가 모두 공기 중에 있어요" : "추 "+st.n+"개가 물에 잠겼어요");
-    $("#measState").className = "rs"+(st.clean?"":" warn");
-  }
-  function roundRect(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
-
-  // 조작: 꾹 누르기 + 끌기
-  function hold(btn, dir){
-    const on = e=>{ e.preventDefault(); S.move = dir; };
-    const off = ()=>{ if (S.move===dir) S.move = 0; };
-    btn.addEventListener("pointerdown", on);
-    ["pointerup","pointerleave","pointercancel"].forEach(ev=>btn.addEventListener(ev, off));
-    btn.addEventListener("contextmenu", e=>e.preventDefault());
-  }
-  hold($("#measUp"), -1); hold($("#measDown"), 1);
-  let drag = null;
-  function vy(e){ const r = cv.getBoundingClientRect(); return {x:(e.clientX-r.left)*W/r.width, y:(e.clientY-r.top)*H/r.height}; }
-  cv.addEventListener("pointerdown", e=>{
-    const p = vy(e), g = geom();
-    if (p.x>270 && p.x<400 && p.y>g.sTop-20 && p.y<g.tops[2]+WH+20){ e.preventDefault(); cv.setPointerCapture(e.pointerId); drag = {y:p.y, a:S.arm}; }
-  });
-  cv.addEventListener("pointermove", e=>{ if (!drag) return; const p = vy(e); S.arm = Math.max(ARM_MIN, Math.min(ARM_MAX, drag.a + (p.y-drag.y))); });
-  ["pointerup","pointercancel"].forEach(ev=>cv.addEventListener(ev, ()=>{ drag=null; }));
-  $("#measArrow").addEventListener("click", ()=>{ S.showArrow=!S.showArrow; $("#measArrow").classList.toggle("on",S.showArrow); $("#measArrow").setAttribute("aria-checked",S.showArrow); });
-  $("#measRec").addEventListener("click", ()=>{
-    const g = geom(), st = state(g);
-    if (!st.clean){ toast("추가 반쯤만 잠겼어요. 추가 완전히 잠기도록 조금 더 내리거나 올려 보세요."); return; }
-    // 추가 거의 다 잠긴 위치면 딱 맞는 위치로 맞춰 줌
-    S.arm = [Math.min(S.arm,110),177,234,288][st.n];
-    const v = fmt(geom().read);
-    S.rec[st.n] = v; renderTable();
-    toast("‘"+ROWS[st.n]+"’ 무게 "+v+" N을 기록했어요.");
-    if (S.rec.every(Boolean) && !done(0)){ setDone(0); S.view = 0; }
-    renderTable(); renderMission();
-  });
-
-  function renderTable(){
-    const t = $("#measTable"); t.innerHTML = "";
-    t.append(el("tr",{}, el("th",{text:"상태"}), el("th",{text:"무게(N)"}), el("th",{text:"감소한 무게(N)"})));
-    ROWS.forEach((r,i)=>{
-      const dec = el("td",{});
-      if (i===0) dec.textContent = "—";
-      else if (done(1)) dec.textContent = fmt(AIR_W - (+S.rec[i] || [0,2.83,2.71,2.59][i]));
-      else if (done(0)){
-        const inp = el("input",{type:"text",inputmode:"decimal",maxlength:"5",placeholder:"?",value:S.inputs[i-1],class:S.inputBad[i-1]?"bad":""});
-        inp.addEventListener("input", ()=>{ S.inputs[i-1] = inp.value; S.inputBad[i-1]=false; inp.classList.remove("bad"); });
-        dec.append(inp);
-      } else dec.textContent = "";
-      t.append(el("tr",{class: S.rec[i]? "got":""}, el("td",{class:"l",text:r}), el("td",{text: S.rec[i] || (done(0)? ["3.00","2.83","2.71","2.59"][i] : "")}), dec));
-    });
-  }
-  function checkInputs(){
-    let ok = true;
-    for (let i=1;i<=3;i++){
-      const want = AIR_W - (+S.rec[i] || [0,2.83,2.71,2.59][i]);
-      const got = parseFloat(String(S.inputs[i-1]).replace(/[^\d.]/g,""));
-      const good = Math.abs(got - want) < 0.006;
-      S.inputBad[i-1] = !good; if (!good) ok = false;
-    }
-    if (ok){ setDone(1); S.view = 1; toast("정답! 감소한 무게를 모두 구했어요."); }
-    else toast("빨간 칸을 다시 계산해 보세요. 감소한 무게 = 공기 중 무게 − 물속 무게");
-    renderTable(); renderMission();
-  }
-
-  const QS = [
-    {q:"물속에 잠긴 추의 개수가 늘어날수록, 공기 중에서보다 감소한 무게는 어떻게 변하나요?",
-     ch:["점점 커진다","변하지 않는다","점점 작아진다"], ans:0,
-     wrong:"표의 ‘감소한 무게’ 칸을 위에서 아래로 다시 읽어 보세요.",
-     right:"맞아요! 잠긴 추의 개수가 늘어날수록 감소한 무게도 커져요."},
-    {q:"추를 물속에 잠글 때 감소한 무게는 무엇을 뜻할까요?",
-     ch:["추에 작용하는 부력의 크기","추의 질량이 줄어든 양","추에 작용하는 중력이 줄어든 양"], ans:0,
-     wrong:"물속에서도 추의 질량과 중력은 그대로예요! 그렇다면 용수철저울의 값은 왜 줄었을까요?",
-     right:"맞아요! 물속에 잠긴 추에 위쪽으로 부력이 작용해서, 부력의 크기만큼 용수철저울의 값이 줄어들어요.  부력의 크기 = 공기 중에서 측정한 무게 − 물속에서 측정한 무게"},
-    {q:"물속에 잠긴 추의 부피와 부력의 크기는 어떤 관계가 있을까요?",
-     ch:["잠긴 부피가 클수록 부력이 커진다","잠긴 부피가 클수록 부력이 작아진다","잠긴 부피와 부력은 관계가 없다"], ans:0,
-     wrong:"추가 1개 → 2개 → 3개 잠길수록 물에 잠긴 부피는 커져요. 그때 부력(감소한 무게)은 어떻게 되었나요?",
-     right:"맞아요! 물속에 잠긴 물체의 부피가 클수록 부력의 크기가 커져요."}
-  ];
-  function renderMission(){
-    const box = $("#measMission"); box.innerHTML = "";
-    const c = cur(); const i = S.view==null ? c : S.view;
-    box.classList.toggle("complete", i===3);
-    const dots = el("div",{class:"dots"});
-    for (let k=0;k<4;k++){
-      const d = k<3 ? done(k) : c===3;
-      dots.append(el("button",{class:(d?"done ":"")+(k===i?"cur":""), disabled:k>c, onclick:()=>{ S.view = (k===c? null : k); renderMission(); }}, k<3? String(k+1) : "📖"));
-    }
-    if (i===3){
-      box.append(el("div",{class:"head"}, el("span",{class:"tag",text:"🎉 실험 완료"}), el("h3",{text:"교과서에 직접 써 볼 차례!"}), dots),
-        el("div",{class:"bookq"},
-          el("div",{style:"font-weight:900;font-size:21px"},"📖 교과서 168쪽을 채워 보세요."),
-          el("div",{style:"font-size:18px;margin:4px 0"},"✏️ 실험 그림 아래 ‘무게: (   ) N’ 칸과 3번 ‘감소한 무게’ 칸을 쓰고, 정리하기 1~3번에 답을 써요."),
-          el("ol",{}, el("li",{text:"물속에 잠긴 추의 개수가 늘어날수록 공기 중에서보다 감소한 무게는 어떻게 변하는지 이야기해 보자."}),
-            el("li",{text:"추를 물속에 잠글 때 감소한 무게가 뜻하는 것은 무엇인지 이야기해 보자."}),
-            el("li",{text:"물속에 잠긴 추의 부피와 부력의 크기는 어떤 관계가 있는지 토의해 보자."})),
-          el("div",{style:"text-align:right;margin-top:6px"}, el("button",{class:"btn",onclick:()=>setSub("fig", true)},"② 그림으로 생각하기 ▶"))));
-      return;
-    }
-    const head = (t,h)=>el("div",{class:"head"}, el("span",{class:"tag",text:"미션 "+(i+1)+" / 3"}), el("h3",{text:h}), dots);
-    if (i===0){
-      box.append(head(0,"📋 무게를 측정해 기록하기"),
-        el("div",{class:"txt"},"용수철저울에 추 3개가 달려 있어요. ‘▼ 내리기’를 꾹 누르거나 추를 끌어 내리면서, 공기 중 → 추 1개 → 2개 → 3개가 물에 잠길 때의 무게를 차례로 ‘📋 기록하기’ 하세요."),
-        el("div",{class:"hint-s",text:"추가 완전히 잠겼을 때 기록해요. 기록한 칸: "+S.rec.filter(Boolean).length+" / 4"}));
-      if (done(0)) box.append(el("div",{class:"notice ok fb",text:"✅ 4가지 무게를 모두 기록했어요!"}), nextBtn());
-    } else if (i===1){
-      box.append(head(1,"➖ 감소한 무게 구하기"),
-        el("div",{class:"txt"},"공기 중에서보다 (가)~(다)에서 감소한 무게를 구해 표의 ‘감소한 무게’ 칸에 써 보세요."),
-        el("div",{class:"notice info"},"💡 감소한 무게 = 공기 중에서 측정한 무게 − 물속에서 측정한 무게   (예: 3.00 − 2.83 = ?)"));
-      if (done(1)) box.append(el("div",{class:"notice ok fb",text:"✅ 감소한 무게: 0.17 N, 0.29 N, 0.41 N"}), nextBtn());
-      else box.append(el("div",{style:"text-align:right;margin-top:8px"}, el("button",{class:"btn",onclick:checkInputs},"✔ 확인하기")));
-    } else {
-      const qi = done(2) ? 2 : S.q, Q = QS[qi];
-      const solved = done(2) || !!S.solved[qi];
-      box.append(head(2,"🤔 결과 정리하기 ("+(qi+1)+"/3)"), el("div",{class:"txt",text:Q.q}));
-      const ch = el("div",{class:"choices"}); const wr = S.qWrong[qi]||[];
-      Q.ch.forEach((t,k)=> ch.append(el("button",{class: (solved && k===Q.ans)?"right":(wr.includes(k)?"wrong":""), disabled:solved, onclick:()=>{
-        if (k===Q.ans){ S.solved[qi] = true; if (qi===2){ setDone(2); S.view = 2; } }
-        else (S.qWrong[qi] = S.qWrong[qi]||[]).push(k);
-        renderMission();
-      }}, t)));
-      box.append(ch);
-      if (wr.length && !solved) box.append(el("div",{class:"notice bad fb",text:Q.wrong}));
-      if (solved) box.append(el("div",{class:"notice ok fb",text:Q.right}));
-      if (solved && qi<2 && !done(2)) box.append(el("div",{style:"text-align:right;margin-top:8px"}, el("button",{class:"btn",onclick:()=>{ S.q = qi+1; renderMission(); }},"다음 질문 ▶")));
-      if (done(2)) box.append(nextBtn());
-    }
-    function nextBtn(){ return el("div",{style:"text-align:right;margin-top:8px"}, el("button",{class:"btn",onclick:()=>{ S.view=null; renderMission(); }}, cur()===3? "📖 교과서 쓰기로 ▶" : "다음 미션 ▶")); }
-  }
-  function step(dt){
-    if (S.move) S.arm = Math.max(ARM_MIN, Math.min(ARM_MAX, S.arm + S.move*150*dt));
-  }
+  const S = {sub:"fig"};
   let last = 0;
   function loop(ts){
     const dt = Math.min(0.05, (ts-last)/1000 || 0.016); last = ts;
-    if (TAB==="meas" && S.sub==="exp" && !$("#app").classList.contains("hidden") && isOpen("meas")){ step(dt); draw(); }
     if (TAB==="meas" && S.sub==="fig" && !$("#app").classList.contains("hidden") && isOpen("meas")) FIG.frame(dt);
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
-
   function setSub(k, scroll){
     S.sub = k;
     $$("#measNav button").forEach(b=>b.classList.toggle("on", b.dataset.s===k));
-    ["exp","fig","quiz"].forEach(x=>$("#ms-"+x).classList.toggle("hidden", x!==k));
+    ["fig","quiz"].forEach(x=>$("#ms-"+x).classList.toggle("hidden", x!==k));
     if (k==="fig") FIG.render();
     if (k==="quiz") QZ.render();
     if (scroll) window.scrollTo({top: $("#tabs").offsetTop - 70, behavior:"smooth"});
   }
   $$("#measNav button").forEach(b=>b.addEventListener("click", ()=>setSub(b.dataset.s, true)));
-
   return {
-    show(){ renderTable(); renderMission(); setSub(S.sub); },
-    reset(){ Object.assign(S,{arm:ARM_MIN,move:0,rec:[null,null,null,null],showArrow:false,inputs:["","",""],inputBad:[false,false,false],q:0,qWrong:{},solved:{},view:null});
-             $("#measArrow").classList.remove("on"); FIG.reset(); },
-    refresh(){ if (TAB==="meas"){ renderTable(); renderMission(); } }
+    show(){ setSub(S.sub); },
+    reset(){ S.sub = "fig"; FIG.reset(); },
+    refresh(){}
   };
 })();
 
@@ -1755,7 +1538,7 @@ const FIG = (function(){
                     el("button",{class:"btn ghost",disabled:S.load<=0,onclick:()=>{ S.load--; render(); }},"짐 내리기"));
         acts.append(el("span",{class:"hint-s",style:"align-self:center",text:"짐을 올리고 내리면서 잠긴 부피와 부력 화살표가 어떻게 변하는지 보세요."}));
       } else acts.append(el("button",{class:"btn",onclick:()=>{ $$("#figSeg button")[0].click(); }},"🥣 그릇 그림 보기"));
-      if (answered("bowl") && answered("ship")) acts.append(el("button",{class:"btn green",onclick:()=>$('#measNav button[data-s="quiz"]').click()},"③ 퀴즈 풀러 가기 ▶"));
+      if (answered("bowl") && answered("ship")) acts.append(el("button",{class:"btn green",onclick:()=>$('#measNav button[data-s="quiz"]').click()},"② 퀴즈 풀러 가기 ▶"));
       box.append(acts);
       if (S.scene==="ship" || (answered("bowl") && answered("ship")))
         box.append(el("div",{class:"notice info",style:"margin-top:10px;font-size:19px"},"📌 물속에 잠긴 물체의 부피가 클수록 부력의 크기가 커진다. 짐을 가득 실은 배는 빈 배보다 물에 더 많이 잠기므로 잠긴 만큼 부력이 더 크게 작용한다."));
@@ -1776,8 +1559,9 @@ const QZ = (function(){
   const ITEMS = [
     {title:"잠긴 추의 개수", q:"같은 추 3개를 매달았어요. A는 추 1개, B는 추 3개가 물에 잠겼어요. 부력이 더 큰 쪽은?", ans:1, b:[0.33,1],
      exp:"B는 물속에 잠긴 추의 부피가 더 커요. 물속에 잠긴 부피가 클수록 부력의 크기가 커져요.", draw:(o,s)=>scaleStack(o, s==="A"?1:3)},
-    {title:"모양만 다른 찰흙", q:"같은 양의 찰흙을 A는 공 모양, B는 납작한 판 모양으로 만들어 물속에 완전히 잠기게 했어요. 부력이 더 큰 쪽은?", ans:2, b:[1,1],
-     exp:"모양이 달라도 찰흙의 양(부피)이 같고 둘 다 완전히 잠겼으니 잠긴 부피가 같아요. 부력은 물에 닿는 면적이 아니라 잠긴 부피에 따라 달라져요.", draw:(o,s)=> s==="A" ? hungBall(o, 52, "#B45309", 280) : hungPlate(o, 150, 40, "#B45309", 280)},
+    {title:"모양만 다른 찰흙", q:"같은 양의 찰흙을 A는 공 모양, B는 속이 꽉 찬 납작한 판 모양으로 만들었어요. 둘 다 실에 매달아 물속에 완전히 잠기게 했을 때, 부력이 더 큰 쪽은?", ans:2, b:[1,1],
+     exp:"모양이 달라도 찰흙의 양(부피)이 같고 둘 다 완전히 잠겼으니 잠긴 부피가 같아요. 그래서 부력도 같아요.",
+     draw:(o,s)=>{ const p = s==="A" ? hungBall(o, 52, "#B45309", 280) : hungPlate(o, 150, 40, "#B45309", 280); label(ctx, s==="A"?"공 모양":"납작한 판", o+240, 372, "#7C2D12", 20, "center"); return p; }},
     {title:"물속에 누른 공", q:"큰 비치볼(A)과 작은 공(B)을 손으로 눌러 물속에 완전히 잠기게 했어요. 부력이 더 큰 쪽은?", ans:0, b:[1,0.3],
      exp:"큰 비치볼이 물속에 잠긴 부피가 훨씬 커요. 그래서 큰 공을 물속에 누르기가 훨씬 힘들어요.", draw:(o,s)=> pushedBall(o, s==="A"?72:30)},
     {title:"빈 배와 짐 실은 배", q:"똑같은 배예요. A는 빈 배, B는 짐을 가득 실은 배예요. 부력이 더 큰 쪽은?", ans:1, b:[0.4,1],
@@ -1788,8 +1572,8 @@ const QZ = (function(){
      exp:"B가 물속에 잠긴 부피가 더 커요. 물체가 물에 더 많이 잠길수록 부력이 커져요.", draw:(o,s)=> hungBall(o, 56, "#F97316", s==="A"?178:260)},
     {title:"세운 막대와 눕힌 막대", q:"같은 막대를 A는 세워서, B는 눕혀서 물속에 완전히 잠기게 했어요. 부력이 더 큰 쪽은?", ans:2, b:[1,1],
      exp:"세우든 눕히든 같은 막대가 완전히 잠기면 잠긴 부피가 같아요. 그래서 부력도 같아요.", draw:(o,s)=> s==="A" ? hungPlate(o, 34, 130, "#7C3AED", 260) : hungPlate(o, 130, 34, "#7C3AED", 300)},
-    {title:"용수철저울 값 비교", q:"공기 중 무게가 5.0 N인 두 물체를 물에 담갔더니, 물속에서 A는 3.0 N, B는 4.0 N이었어요. 부력이 더 큰 쪽은?", ans:0, b:[1,0.5],
-     exp:"부력의 크기 = 공기 중 무게 − 물속 무게. A는 5.0 − 3.0 = 2.0 N, B는 5.0 − 4.0 = 1.0 N이므로 A의 부력이 더 커요.", draw:(o,s)=> scaleRead(o, s==="A"?"3.0":"4.0", s==="A"?1:0.5)},
+    {title:"용수철저울 값 비교", q:"공기 중 무게가 5.0 N으로 같은 두 물체 A와 B를 물속에 완전히 잠기게 했더니, 용수철저울 값이 A는 3.0 N, B는 4.0 N이었어요. 부력이 더 큰 쪽은?", ans:0, b:[1,0.5],
+     exp:"부력의 크기 = 공기 중 무게 − 물속 무게. A는 5.0 − 3.0 = 2.0 N, B는 5.0 − 4.0 = 1.0 N이므로 A의 부력이 더 커요.\n그림을 보면 무게는 같아도 A가 B보다 부피가 커요. 물속에 잠긴 부피가 크니 부력도 더 커서 용수철저울 값이 더 많이 줄어든 거예요.", draw:(o,s)=> scaleRead(o, s==="A"?"3.0":"4.0", s==="A")},
     {title:"얕은 곳과 깊은 곳", q:"같은 물체를 A는 얕은 곳에, B는 깊은 곳에 완전히 잠기게 했어요. 부력이 더 큰 쪽은?", ans:2, b:[1,1],
      exp:"둘 다 완전히 잠겼으니 물속에 잠긴 부피가 같아요. 그래서 부력의 크기도 같아요.", draw:(o,s)=> hungBall(o, 44, "#16A34A", s==="A"?250:340)},
     {title:"부력의 크기 계산", q:"공기 중에서 무게가 8 N인 물체를 물속에서 측정했더니 4 N이었어요. 이 물체에 작용하는 부력의 크기는?", ans:1, ch:["2 N","4 N","12 N"], b:null, single:true,
@@ -1860,16 +1644,20 @@ const QZ = (function(){
     const sub = tops.slice(topFirst);
     return {x, y: (sub[0] + sub[sub.length-1] + 32)/2};
   }
-  function scaleRead(o, val, frac){
+  function scaleRead(o, val, big){
     tank(o); const x=o+240; thread(x, 30);
     ctx.fillStyle="#F59E0B"; ctx.fillRect(x-28,30,56,96);
     ctx.fillStyle="#1F2937"; ctx.fillRect(x-22,44,44,40); ctx.fillStyle="#B5F5C9"; ctx.fillRect(x-19,47,38,34);
     ctx.fillStyle="#0F3D24"; ctx.font="900 18px 'Noto Sans KR'"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(val,x,64);
-    ctx.strokeStyle="#475569"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x,126); ctx.lineTo(x,230); ctx.stroke();
-    ctx.fillStyle="#0EA5E9"; ctx.fillRect(x-44,230,88,70);
+    // A: 부피가 큰 물체, B: 부피가 작은 물체 (공기 중 무게는 둘 다 5.0 N)
+    const w = big? 150 : 62, h = big? 110 : 50, cy = 268, top = cy-h/2;
+    ctx.strokeStyle="#475569"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x,126); ctx.lineTo(x,top); ctx.stroke();
+    ctx.fillStyle = big? "#38BDF8" : "#0369A1"; ctx.fillRect(x-w/2,top,w,h);
+    ctx.strokeStyle="#075985"; ctx.lineWidth=2; ctx.strokeRect(x-w/2,top,w,h);
     label(ctx,"공기 중 5.0 N",o+60,120,"#334155",19);
     label(ctx,"물속 "+val+" N",x+40,64,"#B91C1C",21);
-    return {x, y:265};
+    label(ctx, big? "부피가 큰 물체" : "부피가 작은 물체", x, 372, "#0C4A6E", 19, "center");
+    return {x, y:cy};
   }
   function shade(hex){ const n = parseInt(hex.slice(1),16); const r=(n>>16)*0.6, g=((n>>8)&255)*0.6, b=(n&255)*0.6; return "rgb("+r+","+g+","+b+")"; }
 
@@ -1897,7 +1685,7 @@ const QZ = (function(){
     ctx.fillStyle="rgba(255,255,255,1)"; ctx.fillRect(496,0,8,H);
     [["A",30],["B",530]].forEach(([t,x])=>{ ctx.fillStyle="#12324A"; ctx.beginPath(); ctx.arc(x+22,32,24,0,7); ctx.fill(); label(ctx,t,x+22,33,"#fff",28,"center"); });
     if (doneQ(idx) && it.b){
-      [[pA,it.b[0]],[pB,it.b[1]]].forEach(([p,k])=>{ arrow(ctx,p.x+(it.title==="용수철저울 값 비교"?60:0),p.y,p.x+(it.title==="용수철저울 값 비교"?60:0),p.y-30-90*k,"#E8473B",9); label(ctx,"부력",p.x+14+(it.title==="용수철저울 값 비교"?60:0),p.y-40-90*k,"#C2281E",22); });
+      [[pA,it.b[0]],[pB,it.b[1]]].forEach(([p,k])=>{ const dx = it.title==="용수철저울 값 비교"?95:0; arrow(ctx,p.x+dx,p.y,p.x+dx,p.y-30-90*k,"#E8473B",9); label(ctx,"부력",p.x+14+dx,p.y-40-90*k,"#C2281E",22); });
     }
   }
   function render(){
@@ -1913,7 +1701,7 @@ const QZ = (function(){
     box.append(ch);
     if (done){
       const ok = okQ(idx);
-      box.append(el("div",{class:"notice "+(ok?"ok":"bad")+" fb"}, el("b",{text: ok? "🎉 정답이에요! " : "😮 정답은 ‘"+chs[it.ans]+"’예요. "}), it.exp));
+      box.append(el("div",{class:"notice "+(ok?"ok":"bad")+" fb",style:"white-space:pre-line"}, el("b",{text: ok? "🎉 정답이에요! " : "😮 정답은 ‘"+chs[it.ans]+"’예요. "}), it.exp));
       const acts = el("div",{class:"dir-actions"});
       if (idx<N-1) acts.append(el("button",{class:"btn",onclick:()=>{ idx++; render(); }},"다음 문제 ▶"));
       box.append(acts);
@@ -2231,10 +2019,10 @@ function renderT(){
     v.append(el("div",{class:"notice info",style:"margin-bottom:14px"},"버튼을 누르면 학생 화면에 몇 초 안에 반영돼요. 닫힌 활동은 학생에게 🔒로 보여요."));
     const sw = el("div",{class:"switches"});
     [["lab","🧪 실험실","교과서 166쪽 해 보기 · 미션 4개 → 교과서 1·2번 쓰기 (‘부력’이라는 말은 나오지 않음)"],
-     ["dir","🧭 부력 방향 찾기","8가지 상황에서 부력 화살표 그리기"],
      ["air","🎈 공기 중의 부력","사과·볼링공 vs 헬륨 풍선·열기구 비교 + 확인 문제"],
+     ["dir","🧭 부력 방향 찾기","8가지 상황에서 부력 화살표 그리기"],
      ["wall","📸 부력 사례 담벼락","사진 + 부력 화살표로 생활 속 사례 올리기"],
-     ["meas","⚖️ 부력의 크기","168쪽 부력 측정 실험 → 169쪽 그림(배·그릇) → 퀴즈 10문제"]].forEach(([k,t,d])=>{
+     ["meas","⚖️ 부력의 크기","169쪽 그림(배·그릇) → 퀴즈 10문제 (168쪽 측정 실험은 실험실에서 직접)"]].forEach(([k,t,d])=>{
       const on = TSTATE.open[k];
       sw.append(el("div",{class:"sw-card"+(on?" open":"")}, el("h4",{text:t}), el("div",{class:"hint-s",text:d}),
         el("div",{class:"state",text: on? "🟢 열림" : "🔒 닫힘"}),
@@ -2262,17 +2050,17 @@ function renderT(){
     v.append(sel);
     const list = TSTATE.students.filter(s=> tStuCls==="all" || (s.cls%100)===+tStuCls);
     const tb = el("table",{class:"st"});
-    tb.append(el("tr",{}, ...["학번","닉네임","실험실 ①②③④","방향 찾기","공기","측정 ①②③","그림","퀴즈","사례","관리"].map(h=>el("th",{text:h}))));
+    tb.append(el("tr",{}, ...["학번","닉네임","실험실 ①②③④","공기","방향 찾기","그림","퀴즈","사례","관리"].map(h=>el("th",{text:h}))));
     list.forEach(s=>{
       const md = el("td",{}); for(let i=0;i<4;i++) md.append(el("span",{class:"dot"+((s.missions>>i)&1?" y":"")}));
       let dn=0; for(let i=0;i<8;i++) if ((s.dir>>i)&1) dn++;
-      const ex = s.extra|0, mm = el("td",{}); for(let i=1;i<=3;i++) mm.append(el("span",{class:"dot"+((ex>>i)&1?" y":"")}));
+      const ex = s.extra|0;
       const fg = el("td",{}); for(let i=4;i<=5;i++) fg.append(el("span",{class:"dot"+((ex>>i)&1?" y":"")}));
       const bits = x=>{ let n=0; for(let i=0;i<12;i++) if ((x>>i)&1) n++; return n; };
       const qz = bits(s.qdone|0) ? bits(s.qok|0)+" / "+bits(s.qdone|0) : "-";
       tb.append(el("tr",{},
         el("td",{text:s.sid}), el("td",{class:"l"}, s.nickname, s.pending_nick? el("span",{class:"badge",style:"background:var(--warn)",text:"요청: "+s.pending_nick}) : null),
-        md, el("td",{text:dn+" / 8"}), el("td",{text:(ex&1)?"✅":"-"}), mm, fg, el("td",{title:"맞힌 문제 / 푼 문제", text:qz}), el("td",{text:String(s.posts)}),
+        md, el("td",{text:(ex&1)?"✅":"-"}), el("td",{text:dn+" / 8"}), fg, el("td",{title:"맞힌 문제 / 푼 문제", text:qz}), el("td",{text:String(s.posts)}),
         el("td",{}, el("button",{class:"btn ghost small",onclick:()=>tRename(s)},"닉네임 바꾸기"), " ",
           el("button",{class:"btn red small",onclick:async()=>{
             if (!confirm(s.sid+" ("+s.nickname+") 학생의 기록과 올린 글을 모두 지울까요?\n학생은 다시 입장해야 해요.")) return;
