@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>부력 탐구실</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -104,7 +105,8 @@ nav.tabs button.locked{opacity:.6}
 .lab-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:16px}
 .stage{position:relative;background:linear-gradient(180deg,#F6FBFD,#E9F4F9);border-radius:22px;border:1px solid var(--line);overflow:hidden}
 .stage{display:flex;justify-content:center;align-items:center}
-.stage canvas{display:block;width:100%;height:auto;touch-action:none}
+.stage canvas{display:block;width:100%;height:auto;touch-action:manipulation}   /* 그림 위를 끌어도 화면이 위아래로 움직여요 */
+#dirCv{touch-action:none}   /* 부력 화살표를 직접 그리는 곳만 끌기 사용 */
 #labCv{width:auto;max-width:100%;max-height:68vh;aspect-ratio:640/560}
 #measCv{width:auto;max-width:100%;max-height:74vh;aspect-ratio:640/700}
 .panel h4{font-family:"Jua";font-weight:400;font-size:22px;margin:4px 0 8px}
